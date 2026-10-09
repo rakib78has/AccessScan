@@ -1,5 +1,8 @@
 dist/
+dist-e2e/
 coverage/
 test-results/
 playwright-report/
 package-lock.json
+# Test fixtures are deliberate markup; formatting could change what rules see.
+tests/fixtures/

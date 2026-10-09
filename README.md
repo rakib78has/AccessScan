@@ -3,8 +3,9 @@
 A Chrome extension that finds common accessibility and basic SEO issues on the page you are
 viewing.
 
-> **Status: Milestone 1 (scaffold).** The extension builds, loads and shows its popup. Scanning
-> arrives in Milestone 2. See [docs/architecture.md](docs/architecture.md) for the roadmap.
+> **Status: Milestone 2 (scanner foundation).** SiteCheck scans the current page with axe-core
+> and shows a summary of violations and items needing review. The detailed findings list
+> arrives in Milestone 3. See [docs/architecture.md](docs/architecture.md) for the roadmap.
 
 Automated checks find only a subset of accessibility problems. A clean SiteCheck result does
 not mean a page conforms to WCAG; manual testing is still required.
@@ -30,13 +31,14 @@ extension card.
 | Command                  | What it does                                               |
 | ------------------------ | ---------------------------------------------------------- |
 | `npm run build`          | Production build into `dist/`                              |
+| `npm run build:e2e`      | Test build into `dist-e2e/` (never release this)           |
 | `npm run validate:build` | Checks `dist/` against the permission and packaging policy |
 | `npm run lint`           | ESLint, including type-aware and security rules            |
 | `npm run format:check`   | Prettier check (`npm run format` to fix)                   |
 | `npm run typecheck`      | TypeScript, strict                                         |
-| `npm test`               | Unit and component tests (Vitest)                          |
-| `npm run test:coverage`  | The same, with a coverage report in `coverage/`            |
-| `npm run test:e2e`       | Builds, then runs Playwright against the real extension    |
+| `npm test`               | Unit, integration and component tests (Vitest)             |
+| `npm run test:coverage`  | The same, with coverage thresholds and a report            |
+| `npm run test:e2e`       | Builds both, then runs Playwright against the extension    |
 | `npm run verify`         | Everything CI runs except end-to-end tests                 |
 
 The first `test:e2e` run on a machine needs `npx playwright install chromium`.
@@ -50,6 +52,10 @@ The first `test:e2e` run on a machine needs `npx playwright install chromium`.
 
 ## Known limitations
 
-- No scanning yet (Milestone 2).
 - SiteCheck can scan a tab only after you click its toolbar icon on that tab. This is
   deliberate; see [docs/security.md](docs/security.md).
+- Browser pages (`chrome://`), other extensions and the Chrome Web Store cannot be scanned.
+  Local `file://` pages need "Allow access to file URLs" turned on for SiteCheck.
+- The contents of iframes are not scanned; each frame is listed as needing review.
+- Scans that take longer than 25 seconds are stopped.
+- See [docs/architecture.md](docs/architecture.md#known-limitations) for details.

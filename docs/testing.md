@@ -2,45 +2,73 @@
 
 ## Levels
 
-| Level      | Tool                     | Where              | Runs in       |
-| ---------- | ------------------------ | ------------------ | ------------- |
-| Unit       | Vitest                   | `tests/unit/`      | Node          |
-| Component  | Vitest + Testing Library | `tests/component/` | jsdom         |
-| End-to-end | Playwright               | `tests/e2e/`       | Real Chromium |
+| Level       | Tool                     | Where                | Runs in       |
+| ----------- | ------------------------ | -------------------- | ------------- |
+| Unit        | Vitest                   | `tests/unit/`        | Node          |
+| Integration | Vitest                   | `tests/integration/` | Node          |
+| Component   | Vitest + Testing Library | `tests/component/`   | jsdom         |
+| End-to-end  | Playwright               | `tests/e2e/`         | Real Chromium |
 
-Integration tests (`tests/integration/`) start in Milestone 2 with the messaging layer.
+**Integration tests** drive the real orchestrator, store and message handler, with Chrome
+replaced by an in-memory storage area and scripted tab events (`tests/helpers/`). They cover
+every way a scan can end: result, timeout, navigation, closed tab, bad output, storage
+failure and concurrent requests.
 
 **jsdom has no layout engine**, so colour contrast and anything else that depends on
-rendering cannot be tested there. Those checks run in real Chromium through Playwright.
+rendering cannot be tested there. Those checks, and scanner accuracy in general, run in real
+Chromium through Playwright.
 
-## Loading the extension in Playwright
+## End-to-end setup
 
-`tests/e2e/fixtures.ts` launches a persistent context with `--load-extension` pointed at
-`dist/`, using Playwright's bundled Chromium in the new headless mode. Branded Chrome ignores
-`--load-extension`, and the old headless shell silently loads no extensions.
+- `tests/e2e/fixtures.ts` launches a persistent context with `--load-extension` pointed at
+  `dist-e2e/`, using Playwright's bundled Chromium in the new headless mode. Branded Chrome
+  ignores `--load-extension`, and the old headless shell silently loads no extensions.
+- `tests/helpers/fixture-server.mjs` serves `tests/fixtures/pages/` on `127.0.0.1:4173`.
+  Playwright starts it automatically. No test touches a real website.
+- **The `activeTab` grant cannot be automated.** Playwright cannot click the toolbar icon.
+  The `dist-e2e/` build therefore adds a host permission for `127.0.0.1` (the release
+  validator rejects it), and the real grant is covered by manual case SC-MAN-002.
+- **The popup opens as a tab.** `popupFor(page)` opens `popup/index.html`, brings the target
+  page to the front, and reloads the popup, so the popup sees the target as the active tab
+  exactly as it would after a toolbar click. Clicks in the popup use `dispatchEvent`, because
+  a background tab never runs the animation frames Playwright's stability check waits for.
 
-**Known gap:** Playwright cannot click the toolbar icon, so it cannot trigger the `activeTab`
-grant. From Milestone 2, end-to-end scans will use a test-only build that adds a `127.0.0.1`
-host permission (the release build validator rejects it), and the real `activeTab` flow stays
-on the manual checklist.
+## Fixture pages
+
+| Page              | Purpose                                                                          |
+| ----------------- | -------------------------------------------------------------------------------- |
+| `clean.html`      | No violations; the valid side of each rule, including decorative `alt=""` images |
+| `violations.html` | One known violation per rule, each with an id the tests assert on                |
+| `iframe.html`     | A cross-origin frame that cannot be scanned and must be reported for review      |
+| `large.html`      | 4,000 script-generated rows, slow enough to navigate away mid-scan               |
+
+Fixtures are excluded from Prettier, since reformatting can change what a rule sees.
 
 ## Running
 
 ```sh
-npm test                 # unit + component
-npm run test:coverage    # with coverage (coverage/index.html)
-npm run test:e2e         # builds, then runs Playwright
+npm test                 # unit + integration + component
+npm run test:coverage    # with coverage and thresholds (coverage/index.html)
+npm run test:e2e         # builds dist/ and dist-e2e/, then runs Playwright
+npx playwright test tests/e2e/scan.spec.ts --repeat-each=5   # flakiness check
 ```
 
 ## Conventions
 
-- Test case IDs are stable and appear in test names: `SC-UNIT-nnn`, `SC-UI-nnn`, `SC-INT-nnn`,
-  `SC-E2E-nnn`, `SC-SEC-nnn`, and `SC-MAN-nnn` for manual cases. The register is
+- Test case IDs are stable and appear in test names: `SC-UNIT-nnn`, `SC-INT-nnn`,
+  `SC-UI-nnn`, `SC-E2E-nnn`, `SC-SEC-nnn`, and `SC-MAN-nnn` for manual cases. The register is
   [test-cases.md](test-cases.md).
 - No fixed sleeps: wait on events or state. No production websites: local fixtures only.
+- A new protection gets a test that fails when the protection is removed. Milestone 2
+  verified this by deleting each key check in turn (busy guard, result validation, stale-page
+  check, sender URL check, https help URLs, node cap) and confirming a test failed.
 
-## Coverage targets
+## Coverage
 
-Targets are set per module once it has real logic (Milestone 2 onward). Scanner
-normalization, message guards and exporters aim for at least 90% line and branch coverage.
-Coverage is a floor, not the goal; each test must assert behaviour that matters.
+`vitest.config.ts` enforces at least 90% line and branch coverage for the scan logic and
+trust-boundary modules: orchestrator, message handler, `src/messaging`,
+`src/scanner/accessibility`, `src/storage` and `src/shared`. The run fails below that.
+
+The Chrome adapter, service worker entry, scanner entry and popup bootstrap only run in a real
+browser, so they show as uncovered; the end-to-end suite exercises them. Coverage is a floor,
+not the goal: each test must assert behaviour that matters.

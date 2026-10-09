@@ -38,6 +38,10 @@ jobs:
 
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
+      # A separate build with fixture-server access, written to dist-e2e/ so the
+      # validated release build in dist/ is untouched.
+      - name: Build for end-to-end tests
+        run: npm run build:e2e
       - name: End-to-end tests
         run: npx playwright test
 

@@ -3,39 +3,70 @@
 ## Overview
 
 ```
- popup (React) --scan:start--> service worker --executeScript--> scanner bundle (in page)
-      ^                              |                            axe-core + SEO rules,
-      |                              v                            normalized in the page
-      +------ reads ------ chrome.storage.session <---- stores result ----+
+ popup ──scan:start──▶ service worker ──executeScript(scanner.js)──▶ page (isolated world)
+   ▲     ◀─accepted?──      │          ──executeScript(func)──────▶ axe-core runs,
+   │                        │          ◀──────── ScanResult ──────── normalized in-page
+   │                        ▼
+   └──── storage.onChanged ── chrome.storage.session  { "scan:<tabId>": ScanState }
 ```
 
-This flow is planned from Milestone 2. Milestone 1 contains only the popup shell and an idle
-service worker.
+1. The popup finds the active tab and reads that tab's stored `ScanState`.
+2. **Scan** sends `{ type: 'scan:start', tabId }`. The worker checks the sender and the
+   message, refuses the request if a scan of that tab is already running or the page cannot be
+   scanned, and otherwise stores `running` and replies `accepted`.
+3. The worker injects `scanner.js`, which registers `__siteCheckScan` in the extension's
+   isolated world; the page's own scripts cannot see or call it. A second `executeScript`
+   calls it, and Chrome waits for the promise it returns.
+4. The scanner runs axe-core, normalizes and trims the results, and returns a `ScanResult`.
+5. The worker validates the result (`isScanResult`) and stores `done` or `error`. The popup
+   is listening to storage and updates. If the popup was closed, it shows the stored state
+   next time it opens.
+
+A scan ends with exactly one of: result, error (timeout after 25 s, navigation, no access,
+invalid result, failure) or, if the tab closes, nothing stored.
 
 ## Decisions
 
 **User-initiated access (`activeTab`).** SiteCheck has no host permissions and no declared
 content scripts. Clicking the toolbar icon grants temporary access to that one tab, and only
-then is the scanner injected with `chrome.scripting.executeScript`. Chrome shows no
-permission warning at install, and SiteCheck cannot read pages the user did not ask it to
-scan. The cost is that there are no background or scheduled scans; future multi-page
-features would request `optional_host_permissions` per site at runtime.
+then is the scanner injected. Chrome shows no permission warning at install, and SiteCheck
+cannot read pages the user did not ask it to scan. The cost is that there are no background
+or scheduled scans; future multi-page features would request `optional_host_permissions` per
+site at runtime.
 
 **The service worker orchestrates scans, not the popup.** A popup is destroyed as soon as it
-loses focus, which would abort a scan in progress. The worker owns the scan and writes
-results to `chrome.storage.session`, keyed by tab, so a reopened popup still shows them.
-Chrome stops idle workers, so the worker keeps no state that matters in memory.
+loses focus, which would abort a scan in progress. The worker owns the scan and writes the
+outcome to `chrome.storage.session`. Chrome stops idle workers, so the worker keeps no state
+that matters in memory. A `running` state older than 40 s is treated as orphaned by a
+stopped worker, so it cannot block rescans forever.
 
-**The scanner is a separate classic-script bundle.** `executeScript({ files })` does not run
-ES modules, so the scanner (with axe-core) gets its own IIFE build. Results are normalized
-and trimmed inside the page before crossing the message boundary, which keeps large axe
-payloads out of messages and session storage.
+**Orchestration takes its Chrome APIs as parameters.** `scan-orchestrator.ts` receives a
+`ScanDeps` object; `chrome-adapter.ts` binds it to the real APIs. Every failure path
+(timeouts, navigation, closed tabs, bad output, storage errors) is tested without a browser.
+
+**Two injections, not one.** The scanner bundle only registers a function; a second
+`executeScript({ func })` calls it. This avoids depending on what the last statement of a
+bundled file evaluates to, and lets the call return a structured success or failure.
+
+**Results are normalized inside the page.** Raw axe output can run to megabytes. The scanner
+keeps at most 50 elements per rule, truncates HTML snippets to 300 characters and failure
+summaries to 500, and counts passed rules rather than listing them.
+
+**Restricted pages are detected twice.** When the URL is visible, `checkScannableUrl`
+refuses it up front with a specific message. Without the `tabs` permission Chrome hides the
+URL of pages SiteCheck has no access to (such as `chrome://` pages), so in that case the scan
+is attempted and Chrome's injection error is classified instead.
+
+**Navigation is detected from `status: 'loading'`.** That field is reported without the
+`tabs` permission, unlike `url`. The popup also ignores a stored result whose page URL no
+longer matches the tab, so a result is never shown for the wrong page.
 
 **Generated manifest.** `manifest.config.ts` builds the manifest from the `package.json`
 version, so the two cannot drift. A small Vite plugin emits it; no CRXJS dependency.
 
 **Unminified build.** Readable output keeps Chrome Web Store review and debugging simple.
-React is still its production build.
+React is still its production build. `scanner.js` is 1.5 MB (277 kB gzipped) because it
+contains axe-core; it is read from disk and parsed once per scan.
 
 **TypeScript 6.0, not 7.** `typescript-eslint` 8.71 supports TypeScript below 6.1 only.
 
@@ -44,25 +75,37 @@ instead tested with axe-core itself, in jsdom and in real Chromium.
 
 ## Source layout
 
-| Path                 | Responsibility                                   |
-| -------------------- | ------------------------------------------------ |
-| `manifest.config.ts` | The manifest, as a pure function of the version  |
-| `src/popup/`         | Popup UI                                         |
-| `src/background/`    | MV3 service worker                               |
-| `src/styles/`        | Tailwind entry stylesheet                        |
-| `scripts/`           | Build validation (and, later, packaging)         |
-| `tests/`             | `unit/`, `component/`, `e2e/`, shared `helpers/` |
+| Path                     | Responsibility                                             |
+| ------------------------ | ---------------------------------------------------------- |
+| `manifest.config.ts`     | The manifest, as a pure function of the version            |
+| `src/popup/`             | Popup UI; `hooks/useScan.ts` holds all of its Chrome calls |
+| `src/background/`        | Service worker, message handler, orchestrator, Chrome glue |
+| `src/scanner/`           | Injected bundle: axe-core run and result normalization     |
+| `src/messaging/`         | Message contracts and runtime guards for trust boundaries  |
+| `src/storage/`           | Per-tab scan state in `chrome.storage.session`             |
+| `src/shared/`            | Result schema, error codes and messages, URL checks        |
+| `src/styles/`            | Tailwind entry stylesheet                                  |
+| `scripts/`               | Build validation (and, later, packaging)                   |
+| `vite.scanner.config.ts` | Builds `scanner.js` as a self-contained classic script     |
 
-Directories for the scanner, messaging, reports and storage are added in the milestone that
-first needs them.
+## Known limitations
+
+- **Frames are not scanned.** Only the top-level document is injected; axe reports each
+  iframe under `frame-tested` as needing review. `activeTab` does not cover cross-origin
+  frames.
+- **In-page navigation in single-page apps** does not emit `status: 'loading'`, so a route
+  change during a scan is not detected. The result is still labelled with the URL it was
+  scanned at.
+- **Scans longer than 25 s time out**, to stay within the service worker's idle lifetime.
+- Closed shadow roots cannot be inspected; open shadow roots are.
 
 ## Milestones
 
 1. **Scaffold**: toolchain, valid MV3 package, popup shell, smoke tests, CI. _(done)_
-2. Scanner foundation: message contracts, orchestration, axe-core, error handling.
+2. **Scanner foundation**: message contracts, orchestration, axe-core, error handling. _(done)_
 3. Results UI: findings list, filters, remediation, loading and error states.
 4. SEO checks: title, meta description, viewport, robots, canonical.
 5. Reporting: JSON and CSV export with injection protection.
-6. Browser automation: end-to-end scan journeys against local fixtures.
+6. Browser automation: wider end-to-end journeys and regression fixtures.
 7. CI/CD and security: release workflow, packaging, security review.
 8. Release readiness: documentation, manual cross-site verification, Web Store review.

@@ -1,4 +1,12 @@
+import { scanErrorMessage } from '../shared/errors';
+import { ScanSummary } from './components/ScanSummary';
+import { useScan, type PopupState } from './hooks/useScan';
+
 export function App() {
+  const { state, startScan } = useScan();
+  const running = state.phase === 'running';
+  const canScan = state.phase !== 'loading' && state.phase !== 'no-tab' && !running;
+
   return (
     <main className="flex flex-col gap-3 p-4">
       <header>
@@ -7,6 +15,24 @@ export function App() {
           Accessibility and SEO checks for the page you are viewing.
         </p>
       </header>
+
+      <button
+        type="button"
+        onClick={startScan}
+        disabled={!canScan}
+        aria-busy={running}
+        className="rounded-md bg-blue-700 px-4 py-2 font-medium text-white hover:bg-blue-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700 disabled:cursor-not-allowed disabled:bg-slate-500 dark:focus-visible:outline-blue-300"
+      >
+        {running ? 'Scanning…' : 'Scan this page'}
+      </button>
+
+      {/* Announces progress and errors to screen readers without moving focus. */}
+      <div role="status" aria-live="polite" className="text-sm">
+        <StatusMessage state={state} />
+      </div>
+
+      {state.phase === 'done' && <ScanSummary result={state.state.result} />}
+
       <p
         className="rounded-md border border-amber-300 bg-amber-50 p-3 text-xs text-amber-900 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-100"
         data-testid="automation-disclaimer"
@@ -16,4 +42,24 @@ export function App() {
       </p>
     </main>
   );
+}
+
+function StatusMessage({ state }: { state: PopupState }) {
+  switch (state.phase) {
+    case 'running':
+      return <span>Scanning this page…</span>;
+    case 'done':
+      return <span>Scan complete.</span>;
+    case 'error':
+      return (
+        <span className="text-red-700 dark:text-red-300" data-testid="scan-error">
+          {scanErrorMessage(state.error)}
+        </span>
+      );
+    case 'no-tab':
+      return <span>Open a web page, then scan it.</span>;
+    case 'loading':
+    case 'idle':
+      return null;
+  }
 }

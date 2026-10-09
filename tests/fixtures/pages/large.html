@@ -1,0 +1,29 @@
+<!doctype html>
+<!-- A large, script-generated DOM: slow enough to scan that a navigation can land mid-scan. -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Large fixture</title>
+  </head>
+  <body>
+    <main>
+      <h1>A large page</h1>
+      <table id="rows">
+        <caption>
+          Generated rows
+        </caption>
+        <tbody></tbody>
+      </table>
+    </main>
+    <script>
+      const body = document.querySelector('#rows tbody');
+      for (let i = 0; i < 4000; i += 1) {
+        const row = body.insertRow();
+        row.insertCell().textContent = `Row ${i}`;
+        const link = document.createElement('a');
+        link.href = `#row-${i}`;
+        row.insertCell().append(link); // empty link: one link-name violation per row
+      }
+    </script>
+  </body>
+</html>

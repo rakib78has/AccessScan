@@ -1,0 +1,36 @@
+<!doctype html>
+<!-- Expected: no axe violations. Exercises the valid side of each rule tested in violations.html. -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Clean fixture</title>
+    <style>
+      body {
+        color: #1a1a1a;
+        background: #ffffff;
+        font: 16px/1.5 sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <header><p>Example site</p></header>
+    <nav aria-label="Main"><a href="/clean.html">Home</a></nav>
+    <main>
+      <h1>A page with no known issues</h1>
+      <img src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" alt="Company logo" />
+      <!-- Decorative: an empty alt is correct, not a failure. -->
+      <img src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" alt="" />
+      <form>
+        <label for="email">Email</label>
+        <input id="email" type="email" />
+        <input type="search" aria-label="Search the site" />
+        <button type="submit">Subscribe</button>
+      </form>
+      <a href="/clean.html"
+        ><img src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" alt="Back to home"
+      /></a>
+    </main>
+    <footer><p>Footer text</p></footer>
+  </body>
+</html>

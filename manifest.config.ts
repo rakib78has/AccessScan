@@ -10,15 +10,31 @@
 
 export const MINIMUM_CHROME_VERSION = '116';
 
-export function buildManifest(version: string): chrome.runtime.ManifestV3 {
+export interface ManifestOptions {
+  /**
+   * Adds host access to the local fixture server. Playwright cannot click the
+   * toolbar icon, so end-to-end tests cannot obtain an activeTab grant; only
+   * the separate dist-e2e build uses this, and the release validator rejects it.
+   */
+  e2eFixtureAccess?: boolean;
+}
+
+export const E2E_HOST_PERMISSION = 'http://127.0.0.1/*';
+
+export function buildManifest(
+  version: string,
+  options: ManifestOptions = {},
+): chrome.runtime.ManifestV3 {
   return {
     manifest_version: 3,
     name: 'SiteCheck',
     description: 'Find common accessibility and basic SEO issues on the page you are viewing.',
     version,
     minimum_chrome_version: MINIMUM_CHROME_VERSION,
-    // Milestone 1 only renders the popup, so it needs no permissions yet.
-    permissions: [],
+    // activeTab: temporary access to the tab the user clicked on.
+    // scripting: inject the scanner into that tab. storage: chrome.storage.session.
+    permissions: ['activeTab', 'scripting', 'storage'],
+    ...(options.e2eFixtureAccess ? { host_permissions: [E2E_HOST_PERMISSION] } : {}),
     action: {
       default_title: 'SiteCheck',
       default_popup: 'popup/index.html',

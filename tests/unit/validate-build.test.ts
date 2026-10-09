@@ -7,6 +7,7 @@ const FILES = [
   'manifest.json',
   'popup/index.html',
   'service-worker.js',
+  'scanner.js',
   'icons/icon-16.png',
   'icons/icon-32.png',
   'icons/icon-48.png',
@@ -21,6 +22,18 @@ function validate(overrides: Record<string, unknown> = {}, files = FILES) {
 describe('SC-UNIT-002 validateBuild', () => {
   it('accepts the manifest the build generates', () => {
     expect(validate()).toEqual([]);
+  });
+
+  it('rejects the end-to-end test manifest, so it can never be released', () => {
+    const manifest = buildManifest(VERSION, { e2eFixtureAccess: true });
+    expect(validateBuild({ manifest, files: FILES, packageVersion: VERSION })).toEqual([
+      'host_permissions is not allowed by the permission policy',
+    ]);
+  });
+
+  it('requires the injected scanner, which the manifest does not reference', () => {
+    const files = FILES.filter((file) => file !== 'scanner.js');
+    expect(validate({}, files)).toEqual(['build is missing injected file scanner.js']);
   });
 
   it.each([

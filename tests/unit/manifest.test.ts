@@ -16,10 +16,14 @@ describe('SC-UNIT-001 buildManifest', () => {
     expect(manifest).not.toHaveProperty('content_scripts');
   });
 
-  it('requests only allowlisted permissions', () => {
-    for (const permission of manifest.permissions ?? []) {
-      expect(ALLOWED_PERMISSIONS).toContain(permission);
-    }
+  it('requests exactly the allowlisted permissions', () => {
+    expect([...(manifest.permissions ?? [])].sort()).toEqual([...ALLOWED_PERMISSIONS].sort());
+  });
+
+  it('adds host access to the fixture server only in the end-to-end build', () => {
+    expect(buildManifest('1.2.3', { e2eFixtureAccess: true }).host_permissions).toEqual([
+      'http://127.0.0.1/*',
+    ]);
   });
 
   it('registers the service worker as an ES module at a stable path', () => {

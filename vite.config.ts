@@ -7,17 +7,18 @@ import { MINIMUM_CHROME_VERSION, buildManifest } from './manifest.config.ts';
 
 const root = import.meta.dirname;
 
-function manifestPlugin(): Plugin {
+function manifestPlugin(e2e: boolean): Plugin {
   return {
     name: 'sitecheck-manifest',
     generateBundle() {
       const pkg = JSON.parse(readFileSync(resolve(root, 'package.json'), 'utf8')) as {
         version: string;
       };
+      const manifest = buildManifest(pkg.version, { e2eFixtureAccess: e2e });
       this.emitFile({
         type: 'asset',
         fileName: 'manifest.json',
-        source: `${JSON.stringify(buildManifest(pkg.version), null, 2)}\n`,
+        source: `${JSON.stringify(manifest, null, 2)}\n`,
       });
     },
   };
@@ -28,13 +29,14 @@ function manifestPlugin(): Plugin {
  * the manifest's minimum_chrome_version so no syntax is emitted that the
  * oldest supported Chrome cannot parse.
  */
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   root: resolve(root, 'src'),
   publicDir: resolve(root, 'public'),
   base: './',
-  plugins: [react(), tailwindcss(), manifestPlugin()],
+  plugins: [react(), tailwindcss(), manifestPlugin(mode === 'e2e')],
   build: {
-    outDir: resolve(root, 'dist'),
+    // The e2e build goes to its own folder so it can never be packaged by mistake.
+    outDir: resolve(root, mode === 'e2e' ? 'dist-e2e' : 'dist'),
     emptyOutDir: true,
     target: `chrome${MINIMUM_CHROME_VERSION}`,
     // Unminified output keeps Chrome Web Store review and debugging simple.
@@ -54,4 +56,4 @@ export default defineConfig({
       },
     },
   },
-});
+}));

@@ -21,6 +21,9 @@ const FORBIDDEN_KEYS = [
   'externally_connectable',
 ];
 
+/** Files the service worker injects with chrome.scripting.executeScript. */
+export const INJECTED_FILES = ['scanner.js'];
+
 const FORBIDDEN_FILE = /\.(pem|crx|env)$|(^|\/)\.env/;
 const CHROME_VERSION = /^\d{1,5}(\.\d{1,5}){0,3}$/;
 
@@ -69,6 +72,10 @@ export function validateBuild({ manifest, files, packageVersion }) {
   ].filter(Boolean);
   for (const path of referenced) {
     if (!fileSet.has(path)) errors.push(`manifest references missing file ${path}`);
+  }
+  // Injected by path at runtime, so the manifest does not mention it.
+  for (const path of INJECTED_FILES) {
+    if (!fileSet.has(path)) errors.push(`build is missing injected file ${path}`);
   }
 
   for (const file of files) {

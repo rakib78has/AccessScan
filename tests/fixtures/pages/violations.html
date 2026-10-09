@@ -1,0 +1,38 @@
+<!doctype html>
+<!--
+  Each known problem carries an id the tests assert on. Expected axe violations:
+    image-alt      #missing-alt
+    label          #unlabeled
+    color-contrast #low-contrast
+    link-name      #empty-link
+  Must NOT be reported as image-alt: #decorative (alt="" is valid for decoration).
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Violations fixture</title>
+    <style>
+      body {
+        color: #1a1a1a;
+        background: #ffffff;
+        font: 16px/1.5 sans-serif;
+      }
+      #low-contrast {
+        color: #b0b0b0;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>A page with known issues</h1>
+      <img id="missing-alt" src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" />
+      <img id="decorative" src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" alt="" />
+      <form>
+        <input id="unlabeled" type="text" />
+      </form>
+      <p id="low-contrast">This grey text is hard to read.</p>
+      <a id="empty-link" href="/clean.html"></a>
+      <p id="markup-in-text">&lt;img src=x onerror="alert('xss')"&gt;</p>
+    </main>
+  </body>
+</html>

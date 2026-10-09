@@ -1,0 +1,22 @@
+<!doctype html>
+<!--
+  Embeds a cross-origin frame (localhost vs 127.0.0.1). SiteCheck cannot inject
+  into it, so the scan must still finish promptly and report the frame as
+  needing manual review rather than hanging or claiming it passed.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Iframe fixture</title>
+  </head>
+  <body>
+    <main>
+      <h1>A page with a cross-origin frame</h1>
+      <iframe
+        id="third-party"
+        title="Embedded page"
+        src="http://localhost:4173/violations.html"
+      ></iframe>
+    </main>
+  </body>
+</html>
