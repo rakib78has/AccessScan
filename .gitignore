@@ -1,0 +1,17 @@
+node_modules/
+dist/
+coverage/
+test-results/
+playwright-report/
+release/
+*.zip
+
+# Secrets and signing keys must never be committed
+.env
+.env.*
+!.env.example
+*.pem
+*.crx
+
+.DS_Store
+Thumbs.db
