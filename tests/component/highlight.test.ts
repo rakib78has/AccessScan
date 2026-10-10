@@ -9,10 +9,15 @@ beforeEach(() => {
   // jsdom implements neither layout nor scrolling.
   scrollIntoView = vi.fn();
   Element.prototype.scrollIntoView = scrollIntoView;
+  // jsdom gives every element a zero-size box; real elements have one.
+  vi.spyOn(Element.prototype, 'getBoundingClientRect').mockReturnValue(
+    new DOMRect(10, 20, 100, 30),
+  );
 });
 
 afterEach(() => {
   vi.useRealTimers();
+  vi.restoreAllMocks();
   document.body.replaceChildren();
   overlay()?.remove();
 });
@@ -79,6 +84,22 @@ describe('SC-UI-005 highlightElement (runs in the page)', () => {
   it('reports a path through an element that has no open shadow root', () => {
     document.body.innerHTML = '<div id="host"></div>';
     expect(highlightElement('#host >>> .inner', HIGHLIGHT_OVERLAY_ID, 3000)).toBe('not-found');
+  });
+
+  it('reports an element with no box, such as one in the page head, as not visible', () => {
+    vi.spyOn(Element.prototype, 'getBoundingClientRect').mockReturnValue(new DOMRect(0, 0, 0, 0));
+    document.body.innerHTML = '<p id="x">x</p>';
+    expect(highlightElement('#x', HIGHLIGHT_OVERLAY_ID, 3000)).toBe('not-visible');
+    expect(overlay()).toBeNull();
+  });
+
+  it('places the overlay around the element in page coordinates', () => {
+    document.body.innerHTML = '<p id="x">x</p>';
+    highlightElement('#x', HIGHLIGHT_OVERLAY_ID, 3000);
+    expect(overlay()?.style.top).toBe('16px');
+    expect(overlay()?.style.left).toBe('6px');
+    expect(overlay()?.style.width).toBe('108px');
+    expect(overlay()?.style.height).toBe('38px');
   });
 
   it('reports elements inside frames, which it cannot reach', () => {

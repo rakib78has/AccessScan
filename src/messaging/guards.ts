@@ -1,4 +1,4 @@
-import { IMPACTS, SCAN_SCHEMA_VERSION } from '../shared/types/scan';
+import { FINDING_SOURCES, IMPACTS, SCAN_SCHEMA_VERSION } from '../shared/types/scan';
 import type { AffectedNode, Finding, Impact, ScanResult } from '../shared/types/scan';
 import type { WorkerMessage } from './contracts';
 
@@ -57,7 +57,7 @@ function isAffectedNode(value: unknown): value is AffectedNode {
 function isFinding(value: unknown): value is Finding {
   return (
     isRecord(value) &&
-    value.source === 'axe' &&
+    (FINDING_SOURCES as readonly unknown[]).includes(value.source) &&
     isString(value.ruleId) &&
     (value.outcome === 'violation' || value.outcome === 'needs-review') &&
     isImpact(value.impact) &&

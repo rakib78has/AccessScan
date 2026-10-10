@@ -25,7 +25,7 @@ export function normalizeAxeResults(results: AxeInput, context: NormalizeContext
   const findings = [
     ...results.violations.map((rule) => toFinding(rule, 'violation')),
     ...results.incomplete.map((rule) => toFinding(rule, 'needs-review')),
-  ].sort(compareFindings);
+  ];
 
   return {
     schemaVersion: SCAN_SCHEMA_VERSION,
@@ -33,7 +33,7 @@ export function normalizeAxeResults(results: AxeInput, context: NormalizeContext
     scannedAt: context.scannedAt,
     durationMs: Math.max(0, Math.round(context.durationMs)),
     engine: { name: 'axe-core', version: results.testEngine.version },
-    findings,
+    findings: sortFindings(findings),
     passedRuleCount: results.passes.length,
   };
 }
@@ -81,4 +81,8 @@ function compareFindings(a: Finding, b: Finding): number {
   if (a.outcome !== b.outcome) return a.outcome === 'violation' ? -1 : 1;
   const rank = (f: Finding) => (f.impact ? IMPACT_RANK[f.impact] : IMPACTS.length);
   return rank(a) - rank(b) || a.ruleId.localeCompare(b.ruleId);
+}
+
+export function sortFindings(findings: readonly Finding[]): Finding[] {
+  return [...findings].sort(compareFindings);
 }

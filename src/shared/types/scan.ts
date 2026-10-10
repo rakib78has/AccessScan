@@ -15,6 +15,9 @@ export type Impact = (typeof IMPACTS)[number];
  */
 export type Outcome = 'violation' | 'needs-review';
 
+export const FINDING_SOURCES = ['axe', 'seo'] as const;
+export type FindingSource = (typeof FINDING_SOURCES)[number];
+
 export interface AffectedNode {
   /** CSS selector path; frames and shadow roots are joined with " >>> ". */
   target: string;
@@ -25,7 +28,8 @@ export interface AffectedNode {
 }
 
 export interface Finding {
-  source: 'axe';
+  /** 'axe' for accessibility rules, 'seo' for SiteCheck's own SEO checks. */
+  source: FindingSource;
   ruleId: string;
   outcome: Outcome;
   /** Null when the engine reports no impact, which axe does for some incomplete results. */

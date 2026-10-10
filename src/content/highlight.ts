@@ -12,7 +12,7 @@
  * that container is scrolled while it shows; it disappears after a few seconds.
  */
 
-export type HighlightOutcome = 'shown' | 'not-found' | 'in-frame';
+export type HighlightOutcome = 'shown' | 'not-found' | 'in-frame' | 'not-visible';
 
 export const HIGHLIGHT_OVERLAY_ID = '__sitecheck-highlight';
 export const HIGHLIGHT_DURATION_MS = 3000;
@@ -50,6 +50,8 @@ export function highlightElement(
 
   // Document coordinates stay aligned with the element when the page scrolls.
   const rect = element.getBoundingClientRect();
+  // Elements with no box (in <head>, display: none) cannot be pointed at.
+  if (rect.width === 0 && rect.height === 0) return 'not-visible';
   const overlay = document.createElement('div');
   overlay.id = overlayId;
   overlay.setAttribute('aria-hidden', 'true');

@@ -43,6 +43,8 @@ export default defineConfig({
         'src/background/message-handler.ts': { lines: 90, branches: 90 },
         'src/messaging/**': { lines: 90, branches: 90 },
         'src/scanner/accessibility/**': { lines: 90, branches: 90 },
+        'src/scanner/seo/**': { lines: 90, branches: 90 },
+        'src/scanner/combine.ts': { lines: 90, branches: 90 },
         'src/storage/**': { lines: 90, branches: 90 },
         'src/shared/**': { lines: 90, branches: 90 },
         'src/content/**': { lines: 90, branches: 90 },

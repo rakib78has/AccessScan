@@ -8,6 +8,11 @@ All notable changes are recorded here. The format follows
 
 ### Added
 
+- SEO checks: missing or duplicate title and meta description, missing viewport tag,
+  conflicting or invalid canonical links (violations); title and description length,
+  `noindex`, and canonical links to another site (needs review).
+- Category filter (Accessibility / SEO); filter counts reflect the other active filters.
+- Highlighting an element that is not displayed, such as one in the page head, says so.
 - Findings list: each rule with severity, WCAG criteria, affected elements (selector, HTML
   snippet, failure summary) and a link to fix guidance.
 - Filters by outcome (violations or needs review) and severity, with counts.

@@ -64,11 +64,17 @@ describe('SC-UNIT-005 isScanResult', () => {
     ['a finding with an unknown impact', { findings: [makeFinding({ impact: 'huge' as never })] }],
     ['a javascript: help URL', { findings: [makeFinding({ helpUrl: 'javascript:alert(1)' })] }],
     ['a node with no html', { findings: [makeFinding({ nodes: [{ target: 'a' } as never] })] }],
+    ['a finding from an unknown source', { findings: [makeFinding({ source: 'x' as never })] }],
   ])('rejects %s', (_label, overrides) => {
     expect(isScanResult({ ...makeScanResult(), ...overrides })).toBe(false);
   });
 
   it.each([null, undefined, 'result', [], 0])('rejects %j', (value) => {
     expect(isScanResult(value)).toBe(false);
+  });
+
+  it('accepts SEO findings, including page-wide ones with no elements', () => {
+    const seo = makeFinding({ source: 'seo', wcagTags: [], nodeCount: 0, nodes: [] });
+    expect(isScanResult(makeScanResult({ findings: [seo] }))).toBe(true);
   });
 });

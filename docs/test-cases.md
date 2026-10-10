@@ -16,6 +16,8 @@ actually completed.
 | SC-UNIT-008 | Popup state     | Hides results from another page and orphaned running states             | Yes       | 2026-10-10 | Pass    |
 | SC-UNIT-009 | Filters         | Outcome and severity filtering and counts, including unrated findings   | Yes       | 2026-10-10 | Pass    |
 | SC-UNIT-010 | WCAG labels     | Formats success criteria and conformance levels; ignores unknown tags   | Yes       | 2026-10-10 | Pass    |
+| SC-UNIT-011 | SEO checks      | Each rule: valid, invalid and borderline cases; honest passed count     | Yes       | 2026-10-10 | Pass    |
+| SC-UNIT-012 | SEO checks      | SEO and accessibility results merge in severity order                   | Yes       | 2026-10-10 | Pass    |
 | SC-INT-001  | Orchestrator    | Successful scan: running, then result stored, tab watch released        | Yes       | 2026-10-10 | Pass    |
 | SC-INT-002  | Orchestrator    | Restricted pages, file access, missing tab, hidden URL, no grant        | Yes       | 2026-10-10 | Pass    |
 | SC-INT-003  | Orchestrator    | Timeout, navigation (late result ignored), closed tab, removed frame    | Yes       | 2026-10-10 | Pass    |
@@ -32,6 +34,7 @@ actually completed.
 | SC-UI-007   | Findings        | Lazy details, WCAG labels, safe fix link, node cap note, highlight      | Yes       | 2026-10-10 | Pass    |
 | SC-UI-008   | Findings        | No axe violations with a finding expanded (jsdom)                       | Yes       | 2026-10-10 | Pass    |
 | SC-UI-009   | Popup           | Error boundary replaces a crashed results view                          | Yes       | 2026-10-10 | Pass    |
+| SC-UI-010   | Findings        | Page-wide findings show the fix without elements or highlight buttons   | Yes       | 2026-10-10 | Pass    |
 | SC-SEC-001  | Findings        | Hostile markup in titles, selectors and snippets stays inert text       | Yes       | 2026-10-10 | Pass    |
 | SC-E2E-001  | Extension       | Service worker registers; popup renders with no errors                  | Yes       | 2026-10-10 | Pass    |
 | SC-E2E-002  | Popup           | No axe violations including contrast, light and dark themes             | Yes       | 2026-10-10 | Pass    |
@@ -45,6 +48,8 @@ actually completed.
 | SC-E2E-010  | Findings        | Opens from the keyboard; highlight overlay surrounds the element        | Yes       | 2026-10-10 | Pass    |
 | SC-E2E-011  | Findings        | Highlighting a removed element explains that it is gone                 | Yes       | 2026-10-10 | Pass    |
 | SC-E2E-012  | Findings        | Results view has no axe violations incl. contrast, both themes          | Yes       | 2026-10-10 | Pass    |
+| SC-E2E-013  | SEO             | Exactly the five known SEO findings on `seo-issues.html`; SEO filter    | Yes       | 2026-10-10 | Pass    |
+| SC-E2E-014  | SEO             | Highlighting an element in `<head>` explains it is not displayed        | Yes       | 2026-10-10 | Pass    |
 | SC-MAN-001  | Extension       | Loads unpacked in desktop Chrome; popup opens from the toolbar          | No        | n/a        | Not run |
 | SC-MAN-002  | Scan            | Real `activeTab` flow: scan a public site after clicking the icon       | No        | n/a        | Not run |
 
