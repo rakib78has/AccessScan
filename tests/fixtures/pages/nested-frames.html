@@ -1,0 +1,20 @@
+<!doctype html>
+<!--
+  Same-origin nested frames. The scanner runs in the top document only, so the
+  violations inside the frames (from violations.html) are expected to be
+  MISSED; axe reports the frame itself as needing review ("frame-tested").
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nested frames fixture</title>
+    <meta name="description" content="A test page with same-origin nested frames, used by SiteCheck tests to document frame limits." />
+  </head>
+  <body>
+    <main>
+      <h1>Nested frames</h1>
+      <iframe id="outer" title="Outer frame" srcdoc='<!doctype html><html lang="en"><head><title>Outer</title></head><body><main><h1>Outer</h1><iframe id="inner" title="Inner frame" src="/violations.html"></iframe></main></body></html>'></iframe>
+    </main>
+  </body>
+</html>

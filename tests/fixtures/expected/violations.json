@@ -1,0 +1,42 @@
+[
+  {
+    "outcome": "violation",
+    "source": "axe",
+    "ruleId": "color-contrast",
+    "impact": "serious",
+    "nodeCount": 1,
+    "targets": [
+      "#low-contrast"
+    ]
+  },
+  {
+    "outcome": "violation",
+    "source": "axe",
+    "ruleId": "image-alt",
+    "impact": "critical",
+    "nodeCount": 1,
+    "targets": [
+      "#missing-alt"
+    ]
+  },
+  {
+    "outcome": "violation",
+    "source": "axe",
+    "ruleId": "label",
+    "impact": "critical",
+    "nodeCount": 1,
+    "targets": [
+      "#unlabeled"
+    ]
+  },
+  {
+    "outcome": "violation",
+    "source": "axe",
+    "ruleId": "link-name",
+    "impact": "serious",
+    "nodeCount": 1,
+    "targets": [
+      "#empty-link"
+    ]
+  }
+]

@@ -8,6 +8,9 @@ All notable changes are recorded here. The format follows
 
 ### Added
 
+- Regression suite: 11 fixture pages (contrast edge cases, shadow DOM, dynamic content, frames,
+  unusual markup, empty pages) checked against reviewed expected results on every CI run.
+- `docs/accuracy.md`: what SiteCheck finds, flags for review and misses, with evidence.
 - Export a scan as JSON (versioned report with summary and disclaimer) or CSV (one row per
   affected element), protected against spreadsheet formula injection. No new permissions.
 - SEO checks: missing or duplicate title and meta description, missing viewport tag,

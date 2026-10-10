@@ -1,0 +1,12 @@
+[
+  {
+    "outcome": "violation",
+    "source": "axe",
+    "ruleId": "image-alt",
+    "impact": "critical",
+    "nodeCount": 1,
+    "targets": [
+      "#long"
+    ]
+  }
+]

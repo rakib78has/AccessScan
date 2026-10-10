@@ -1,0 +1,31 @@
+<!doctype html>
+<!--
+  Shadow DOM. Intent:
+    #open-host   (open shadow root): an image without alt and an unlabeled input.
+                 axe walks open roots, so both should be reported, with targets
+                 like "#open-host >>> img".
+    #closed-host (closed shadow root): the same problems. Nothing outside the
+                 component can see into a closed root, so they are expected to be
+                 MISSED (a documented false negative, not a bug).
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Shadow DOM fixture</title>
+    <meta name="description" content="A test page with problems inside open and closed shadow roots, used by SiteCheck tests." />
+  </head>
+  <body>
+    <main>
+      <h1>Shadow DOM</h1>
+      <div id="open-host"></div>
+      <div id="closed-host"></div>
+    </main>
+    <script>
+      const markup =
+        '<img class="no-alt" src="data:image/gif;base64,R0lGODlhAQABAAAAACw="><input class="no-label" type="text">';
+      document.getElementById('open-host').attachShadow({ mode: 'open' }).innerHTML = markup;
+      document.getElementById('closed-host').attachShadow({ mode: 'closed' }).innerHTML = markup;
+    </script>
+  </body>
+</html>

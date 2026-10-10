@@ -3,7 +3,7 @@
 A Chrome extension that finds common accessibility and basic SEO issues on the page you are
 viewing.
 
-> **Status: Milestone 5 (reporting).** SiteCheck checks the current page for accessibility
+> **Status: Milestone 6 (regression coverage).** SiteCheck checks the current page for accessibility
 > problems with axe-core and for basic SEO problems (title, meta description, viewport,
 > `noindex`, canonical links) with its own rules. It lists each finding with how to fix it,
 > filters by outcome, category and severity, highlights elements on the page, and exports
@@ -50,6 +50,8 @@ The first `test:e2e` run on a machine needs `npx playwright install chromium`.
 - [Architecture](docs/architecture.md)
 - [Testing](docs/testing.md) and the [test case register](docs/test-cases.md)
 - [Security and privacy](docs/security.md)
+- [Accuracy and known limits](docs/accuracy.md): what SiteCheck finds, flags for review, and
+  misses
 - [Changelog](CHANGELOG.md)
 
 ## Known limitations
@@ -58,7 +60,9 @@ The first `test:e2e` run on a machine needs `npx playwright install chromium`.
   deliberate; see [docs/security.md](docs/security.md).
 - Browser pages (`chrome://`), other extensions and the Chrome Web Store cannot be scanned.
   Local `file://` pages need "Allow access to file URLs" turned on for SiteCheck.
-- The contents of iframes are not scanned; each frame is listed as needing review.
+- The contents of iframes and closed shadow roots are not scanned; each frame is listed as
+  needing review.
+- Invalid HTML such as duplicate `id` values is not reported; use an HTML validator.
 - Scans that take longer than 25 seconds are stopped.
 - SEO checks see the rendered page only, not HTTP headers or `robots.txt`.
 - See [docs/architecture.md](docs/architecture.md#known-limitations) for details.

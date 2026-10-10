@@ -1,0 +1,42 @@
+<!doctype html>
+<!--
+  Unusual and invalid markup. Nothing here should crash the scan. Intent:
+    #broken          unclosed and misnested tags; the parser repairs them.
+    #hidden-img      display:none image without alt: hidden from everyone, not reported.
+    #aria-hidden-img aria-hidden image without alt: hidden from assistive tech, not reported.
+    template         an image without alt inside <template> is inert, not reported.
+    #long            an image without alt whose src is very long; reported, snippet truncated.
+    #svg-icon        inline SVG with a <title>; that title is not the page title.
+    #rtl, #emoji     right-to-left and emoji text survive intact.
+    #dup             two elements share an id (invalid HTML).
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Unusual markup fixture</title>
+    <meta name="description" content="A test page with invalid, hidden, inert and unusual markup, used by SiteCheck tests." />
+  </head>
+  <body>
+    <main>
+      <h1>Unusual markup</h1>
+      <div id="broken"><p>Unclosed paragraph <b>bold <i>misnested</b> text</i>
+        <ul><li>one<li>two</ul>
+      </div>
+      <img id="hidden-img" style="display: none" src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" />
+      <img id="aria-hidden-img" aria-hidden="true" src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" />
+      <template><img src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" /></template>
+      <img id="long" src="data:image/gif;base64,R0lGODlhAQABAAAAACw=#LONGPADDING" />
+      <svg id="svg-icon" role="img" aria-labelledby="svg-title" width="10" height="10"><title id="svg-title">Star</title><circle cx="5" cy="5" r="4" /></svg>
+      <p id="rtl" dir="rtl" lang="ar">مرحبا بالعالم</p>
+      <p id="emoji">Emoji text 🚀✅ survives</p>
+      <p id="dup">First</p>
+      <p id="dup">Second</p>
+    </main>
+    <script>
+      // Pad the long image's src to 2,000 characters to exercise snippet truncation.
+      const img = document.getElementById('long');
+      img.setAttribute('src', img.getAttribute('src').replace('LONGPADDING', 'x'.repeat(2000)));
+    </script>
+  </body>
+</html>

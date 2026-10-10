@@ -1,0 +1,12 @@
+[
+  {
+    "outcome": "needs-review",
+    "source": "axe",
+    "ruleId": "frame-tested",
+    "impact": "critical",
+    "nodeCount": 1,
+    "targets": [
+      "#outer"
+    ]
+  }
+]

@@ -1,0 +1,22 @@
+[
+  {
+    "outcome": "violation",
+    "source": "axe",
+    "ruleId": "landmark-one-main",
+    "impact": "moderate",
+    "nodeCount": 1,
+    "targets": [
+      "html"
+    ]
+  },
+  {
+    "outcome": "violation",
+    "source": "axe",
+    "ruleId": "page-has-heading-one",
+    "impact": "moderate",
+    "nodeCount": 1,
+    "targets": [
+      "html"
+    ]
+  }
+]

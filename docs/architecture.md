@@ -128,6 +128,8 @@ schema, so the two can evolve independently.
 
 ## Known limitations
 
+[accuracy.md](accuracy.md) lists what each check finds and misses, backed by fixtures.
+
 - **Frames are not scanned.** Only the top-level document is injected; axe reports each
   iframe under `frame-tested` as needing review. `activeTab` does not cover cross-origin
   frames.
@@ -152,6 +154,6 @@ schema, so the two can evolve independently.
 3. **Results UI**: findings list, filters, fix guidance, highlighting, error boundary. _(done)_
 4. **SEO checks**: title, meta description, viewport, robots, canonical. _(done)_
 5. **Reporting**: JSON and CSV export with injection protection. _(done)_
-6. Browser automation: wider end-to-end journeys and regression fixtures.
+6. **Regression coverage**: edge-case fixtures, golden-file regression suite, accuracy notes. _(done)_
 7. CI/CD and security: release workflow, packaging, security review.
 8. Release readiness: documentation, manual cross-site verification, Web Store review.

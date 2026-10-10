@@ -1,0 +1,66 @@
+[
+  {
+    "outcome": "violation",
+    "source": "axe",
+    "ruleId": "document-title",
+    "impact": "serious",
+    "nodeCount": 1,
+    "targets": [
+      "html"
+    ]
+  },
+  {
+    "outcome": "violation",
+    "source": "axe",
+    "ruleId": "html-has-lang",
+    "impact": "serious",
+    "nodeCount": 1,
+    "targets": [
+      "html"
+    ]
+  },
+  {
+    "outcome": "violation",
+    "source": "axe",
+    "ruleId": "landmark-one-main",
+    "impact": "moderate",
+    "nodeCount": 1,
+    "targets": [
+      "html"
+    ]
+  },
+  {
+    "outcome": "violation",
+    "source": "axe",
+    "ruleId": "page-has-heading-one",
+    "impact": "moderate",
+    "nodeCount": 1,
+    "targets": [
+      "html"
+    ]
+  },
+  {
+    "outcome": "violation",
+    "source": "seo",
+    "ruleId": "seo-meta-description-missing",
+    "impact": "moderate",
+    "nodeCount": 0,
+    "targets": []
+  },
+  {
+    "outcome": "violation",
+    "source": "seo",
+    "ruleId": "seo-title-missing",
+    "impact": "serious",
+    "nodeCount": 0,
+    "targets": []
+  },
+  {
+    "outcome": "violation",
+    "source": "seo",
+    "ruleId": "seo-viewport-missing",
+    "impact": "moderate",
+    "nodeCount": 0,
+    "targets": []
+  }
+]

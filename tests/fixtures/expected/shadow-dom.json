@@ -1,0 +1,22 @@
+[
+  {
+    "outcome": "violation",
+    "source": "axe",
+    "ruleId": "image-alt",
+    "impact": "critical",
+    "nodeCount": 1,
+    "targets": [
+      "#open-host >>> img"
+    ]
+  },
+  {
+    "outcome": "violation",
+    "source": "axe",
+    "ruleId": "label",
+    "impact": "critical",
+    "nodeCount": 1,
+    "targets": [
+      "#open-host >>> input"
+    ]
+  }
+]
