@@ -1,6 +1,7 @@
 import type { ScanResult } from '../../shared/types/scan';
 import { useHighlight } from '../hooks/useHighlight';
 import { ErrorBoundary } from './ErrorBoundary';
+import { ExportControls } from './ExportControls';
 import { FindingsPanel } from './FindingsPanel';
 import { ScanSummary } from './ScanSummary';
 
@@ -16,6 +17,8 @@ export function ResultsView({ tabId, result }: Props) {
     // Keyed by scan time, so a new scan clears a previous rendering failure and filters.
     <ErrorBoundary key={result.scannedAt}>
       <ScanSummary result={result} />
+      {/* Above the list, so it is reachable without scrolling past every finding. */}
+      <ExportControls result={result} />
       <FindingsPanel result={result} onHighlight={highlight} highlightMessage={message} />
     </ErrorBoundary>
   );

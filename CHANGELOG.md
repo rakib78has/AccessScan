@@ -8,6 +8,8 @@ All notable changes are recorded here. The format follows
 
 ### Added
 
+- Export a scan as JSON (versioned report with summary and disclaimer) or CSV (one row per
+  affected element), protected against spreadsheet formula injection. No new permissions.
 - SEO checks: missing or duplicate title and meta description, missing viewport tag,
   conflicting or invalid canonical links (violations); title and description length,
   `noindex`, and canonical links to another site (needs review).

@@ -70,7 +70,12 @@ npx playwright test tests/e2e/scan.spec.ts --repeat-each=5   # flakiness check
   did the same for the help link's `rel`, lazy rendering, invalid selectors, the severity
   filter and overlay replacement. Milestone 4 did it for SVG titles, case-insensitive meta
   names, exact `noindex` matching, review-only length checks, canonical URL schemes and the
-  passed-rule count.
+  passed-rule count. Milestone 5 did it for each CSV safeguard (formula prefixes, quote
+  doubling, BOM, CRLF), file name sanitizing and the report disclaimer.
+- CSV tests parse the output back with a strict RFC 4180 reader (`tests/helpers/csv-parse.ts`)
+  rather than matching substrings, so they prove the file is well-formed.
+- Run end-to-end tests with `npm run test:e2e`, which rebuilds first. Running
+  `npx playwright test` alone uses whatever is already in `dist-e2e/`, which can be stale.
 
 ## Things jsdom cannot test
 
