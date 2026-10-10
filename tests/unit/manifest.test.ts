@@ -26,6 +26,12 @@ describe('SC-UNIT-001 buildManifest', () => {
     ]);
   });
 
+  it('sets a CSP stricter than Chrome’s default, with no localhost exception', () => {
+    expect(manifest.content_security_policy).toEqual({
+      extension_pages: "script-src 'self'; object-src 'self'",
+    });
+  });
+
   it('registers the service worker as an ES module at a stable path', () => {
     expect(manifest.background).toEqual({ service_worker: 'service-worker.js', type: 'module' });
   });

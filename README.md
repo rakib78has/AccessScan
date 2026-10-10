@@ -3,7 +3,7 @@
 A Chrome extension that finds common accessibility and basic SEO issues on the page you are
 viewing.
 
-> **Status: Milestone 6 (regression coverage).** SiteCheck checks the current page for accessibility
+> **Status: Milestone 7 (release pipeline).** SiteCheck checks the current page for accessibility
 > problems with axe-core and for basic SEO problems (title, meta description, viewport,
 > `noindex`, canonical links) with its own rules. It lists each finding with how to fix it,
 > filters by outcome, category and severity, highlights elements on the page, and exports
@@ -30,18 +30,20 @@ extension card.
 
 ## Commands
 
-| Command                  | What it does                                               |
-| ------------------------ | ---------------------------------------------------------- |
-| `npm run build`          | Production build into `dist/`                              |
-| `npm run build:e2e`      | Test build into `dist-e2e/` (never release this)           |
-| `npm run validate:build` | Checks `dist/` against the permission and packaging policy |
-| `npm run lint`           | ESLint, including type-aware and security rules            |
-| `npm run format:check`   | Prettier check (`npm run format` to fix)                   |
-| `npm run typecheck`      | TypeScript, strict                                         |
-| `npm test`               | Unit, integration and component tests (Vitest)             |
-| `npm run test:coverage`  | The same, with coverage thresholds and a report            |
-| `npm run test:e2e`       | Builds both, then runs Playwright against the extension    |
-| `npm run verify`         | Everything CI runs except end-to-end tests                 |
+| Command                           | What it does                                                                   |
+| --------------------------------- | ------------------------------------------------------------------------------ |
+| `npm run build`                   | Production build into `dist/`                                                  |
+| `npm run build:e2e`               | Test build into `dist-e2e/` (never release this)                               |
+| `npm run validate:build`          | Checks `dist/` against the permission and packaging policy                     |
+| `npm run lint`                    | ESLint, including type-aware and security rules                                |
+| `npm run format:check`            | Prettier check (`npm run format` to fix)                                       |
+| `npm run typecheck`               | TypeScript, strict                                                             |
+| `npm test`                        | Unit, integration and component tests (Vitest)                                 |
+| `npm run test:coverage`           | The same, with coverage thresholds and a report                                |
+| `npm run test:e2e`                | Builds both, then runs Playwright against the extension                        |
+| `npm run verify`                  | Everything CI runs except end-to-end tests                                     |
+| `npm run package`                 | Validates `dist/` and writes `release/sitecheck-<version>.zip` and its SHA-256 |
+| `npm run release:check -- v1.2.3` | Checks a tag against `package.json` and `CHANGELOG.md`                         |
 
 The first `test:e2e` run on a machine needs `npx playwright install chromium`.
 
@@ -52,6 +54,7 @@ The first `test:e2e` run on a machine needs `npx playwright install chromium`.
 - [Security and privacy](docs/security.md)
 - [Accuracy and known limits](docs/accuracy.md): what SiteCheck finds, flags for review, and
   misses
+- [Release process](docs/release-process.md): versioning, tagging, store submission, rollback
 - [Changelog](CHANGELOG.md)
 
 ## Known limitations

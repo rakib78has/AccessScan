@@ -22,12 +22,14 @@
     "test:e2e": "npm run build && npm run build:e2e && playwright test",
     "validate:build": "node scripts/validate-build.mjs",
     "verify": "npm run format:check && npm run lint && npm run typecheck && npm run test && npm run build && npm run validate:build",
-    "build:e2e": "vite build --mode e2e && vite build --config vite.scanner.config.ts --mode e2e"
+    "build:e2e": "vite build --mode e2e && vite build --config vite.scanner.config.ts --mode e2e",
+    "package": "node scripts/package.mjs",
+    "release:check": "node scripts/release-check.mjs"
   },
   "dependencies": {
+    "axe-core": "4.14.0",
     "react": "19.3.0",
-    "react-dom": "19.3.0",
-    "axe-core": "4.14.0"
+    "react-dom": "19.3.0"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
@@ -46,6 +48,7 @@
     "eslint": "10.12.0",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-react-hooks": "7.1.1",
+    "fflate": "0.8.3",
     "globals": "17.13.0",
     "jsdom": "30.1.2",
     "prettier": "3.9.9",

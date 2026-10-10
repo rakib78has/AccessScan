@@ -123,7 +123,7 @@ schema, so the two can evolve independently.
 | `src/storage/`           | Per-tab scan state in `chrome.storage.session`                               |
 | `src/shared/`            | Result schema, error codes and messages, URL checks                          |
 | `src/styles/`            | Tailwind entry stylesheet                                                    |
-| `scripts/`               | Build validation (and, later, packaging)                                     |
+| `scripts/`               | Build validation, reproducible packaging, release consistency checks         |
 | `vite.scanner.config.ts` | Builds `scanner.js` as a self-contained classic script                       |
 
 ## Known limitations
@@ -155,5 +155,5 @@ schema, so the two can evolve independently.
 4. **SEO checks**: title, meta description, viewport, robots, canonical. _(done)_
 5. **Reporting**: JSON and CSV export with injection protection. _(done)_
 6. **Regression coverage**: edge-case fixtures, golden-file regression suite, accuracy notes. _(done)_
-7. CI/CD and security: release workflow, packaging, security review.
+7. **Release pipeline**: tag-driven release workflow, reproducible packaging, security review. _(done)_
 8. Release readiness: documentation, manual cross-site verification, Web Store review.

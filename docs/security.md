@@ -54,6 +54,36 @@ The CSV protection's known trade-off: a cell that legitimately begins with `-` o
 | Spreadsheet formula injection in CSV exports | Cells starting with `=`, `+`, `-`, `@`, tab or carriage return get a leading `'` (OWASP); every field quoted (SC-SEC-002) | Active |
 | Unsafe characters in download file names     | Host reduced to `a-z 0-9 . -`, capped at 60 characters; fixed `sitecheck-…` prefix (SC-UNIT-015)                          | Active |
 
+## Security review (Milestone 7, 2026-10-10)
+
+What was checked, and the evidence:
+
+| Area                         | Finding                                                                                                                                                                                                                            | Evidence                                                                                                                                           |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Network                      | Scanning, highlighting and exporting make **no network requests**.                                                                                                                                                                 | SC-SEC-003 records every request during a full session; a positive control proves the recorder works                                               |
+| axe-core stylesheet download | axe can re-fetch page stylesheets for a few CSS rules (`preload`). Now explicitly off.                                                                                                                                             | `src/scanner/entry.ts`; SC-SEC-003                                                                                                                 |
+| Dynamic code in our bundles  | None. The popup's only `fetch` was Vite's module-preload polyfill, now disabled.                                                                                                                                                   | `validate-build.mjs` fails any build whose popup or worker contains `eval`, `new Function`, `fetch`, `XMLHttpRequest`, `WebSocket` or `sendBeacon` |
+| Dynamic code in axe-core     | axe contains `new Function` (templates, plugin loading) in paths SiteCheck does not use. Chrome blocks string evaluation in the scanner's isolated world, so they could not run anyway.                                            | SC-SEC-004 gets `EvalError` from that world                                                                                                        |
+| Content Security Policy      | Chrome's default also trusts `http://localhost:*` and `http://127.0.0.1:*`. SiteCheck now declares `script-src 'self'; object-src 'self'`, and the validator requires it.                                                          | SC-UNIT-001, SC-UNIT-002, SC-SEC-005                                                                                                               |
+| Dependencies                 | `npm audit`: 0 vulnerabilities. Every version pinned exactly; `fflate` added for packaging only (build time, not shipped).                                                                                                         | `package.json`, `package-lock.json`                                                                                                                |
+| CI and release               | Third-party actions pinned to commit SHAs; read-only token except the release job's `contents: write`; tag and version taken from environment variables, never interpolated into scripts. `actionlint` 1.7.12 reports no problems. | `.github/workflows/`                                                                                                                               |
+| Packaging                    | The store zip is built only from a validated build, leaves out source maps, and is reproducible (identical bytes from the same commit) with a SHA-256 checksum.                                                                    | SC-UNIT-016; CI's checksum step                                                                                                                    |
+
+## Pre-release security checklist
+
+Run through this before every tag; record anything unusual in the release notes.
+
+- [ ] `npm audit` reports no known vulnerabilities, or each is assessed and noted.
+- [ ] The permissions table above still matches `manifest.config.ts`; no new permission or
+      host access without updating this document first.
+- [ ] `npm run validate:build` passes (permissions, CSP, forbidden code, secrets).
+- [ ] The full CI pipeline passed on the commit being tagged.
+- [ ] The regression suite's expected files are unchanged, or every change was reviewed.
+- [ ] No secrets, keys or `.env` files in the repository or package
+      (`git ls-files | grep -iE '\.(pem|crx|env)$'` prints nothing).
+- [ ] Manual checks SC-MAN-001 and SC-MAN-002 done on the release build in desktop Chrome.
+- [ ] The Chrome Web Store listing's privacy answers still match "Data handling" above.
+
 ## Known risks
 
 - Chrome reports injection failures only as message text, which SiteCheck classifies by

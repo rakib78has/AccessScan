@@ -25,14 +25,36 @@ const FORBIDDEN_KEYS = [
 export const INJECTED_FILES = ['scanner.js'];
 
 const FORBIDDEN_FILE = /\.(pem|crx|env)$|(^|\/)\.env/;
+
+/**
+ * Dynamic code and network calls must never appear in SiteCheck's own bundles
+ * (popup, service worker). The injected scanner is exempt: it bundles
+ * axe-core, whose template and plugin code contains `new Function` and an
+ * optional stylesheet download that SiteCheck switches off (see
+ * docs/security.md).
+ */
+const FORBIDDEN_CODE = [
+  { pattern: /\beval\s*\(/, name: 'eval()' },
+  { pattern: /\bnew Function\b/, name: 'new Function' },
+  { pattern: /\bfetch\s*\(/, name: 'fetch()' },
+  { pattern: /\bXMLHttpRequest\b/, name: 'XMLHttpRequest' },
+  { pattern: /\bWebSocket\b/, name: 'WebSocket' },
+  { pattern: /\bsendBeacon\b/, name: 'sendBeacon' },
+];
 const CHROME_VERSION = /^\d{1,5}(\.\d{1,5}){0,3}$/;
 
 /**
- * @param {{ manifest: Record<string, any>, files: string[], packageVersion: string }} build
- *   `files` are paths relative to dist/, using forward slashes.
+ * @param {{
+ *   manifest: Record<string, any>,
+ *   files: string[],
+ *   packageVersion: string,
+ *   sources?: Record<string, string>,
+ * }} build
+ *   `files` are paths relative to dist/, using forward slashes. `sources` maps
+ *   JavaScript file paths to their contents.
  * @returns {string[]} problems found; empty when the build is valid.
  */
-export function validateBuild({ manifest, files, packageVersion }) {
+export function validateBuild({ manifest, files, packageVersion, sources = {} }) {
   const errors = [];
   const fileSet = new Set(files);
 
@@ -63,6 +85,10 @@ export function validateBuild({ manifest, files, packageVersion }) {
   if (/unsafe-eval|unsafe-inline|https?:/.test(csp)) {
     errors.push('content_security_policy must not allow eval, inline scripts, or remote sources');
   }
+  // Without an explicit policy Chrome's default applies, which trusts localhost scripts.
+  if (!manifest.content_security_policy?.extension_pages?.includes("script-src 'self'")) {
+    errors.push("content_security_policy.extension_pages must set script-src 'self'");
+  }
 
   const referenced = [
     manifest.action?.default_popup,
@@ -80,6 +106,13 @@ export function validateBuild({ manifest, files, packageVersion }) {
 
   for (const file of files) {
     if (FORBIDDEN_FILE.test(file)) errors.push(`build must not contain ${file}`);
+  }
+
+  for (const [file, source] of Object.entries(sources)) {
+    if (INJECTED_FILES.includes(file)) continue;
+    for (const { pattern, name } of FORBIDDEN_CODE) {
+      if (pattern.test(source)) errors.push(`${file} must not contain ${name}`);
+    }
   }
 
   return errors;
@@ -100,10 +133,15 @@ function main() {
     process.exit(1);
   }
 
+  const files = listFiles(dist);
+  const sources = Object.fromEntries(
+    files.filter((f) => f.endsWith('.js')).map((f) => [f, readFileSync(join(dist, f), 'utf8')]),
+  );
   const errors = validateBuild({
     manifest: JSON.parse(readFileSync(join(dist, 'manifest.json'), 'utf8')),
-    files: listFiles(dist),
+    files,
     packageVersion: JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')).version,
+    sources,
   });
 
   if (errors.length > 0) {
