@@ -6,8 +6,16 @@ All notable changes are recorded here. The format follows
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-10-10
+
+First release.
+
 ### Added
 
+- Third-party licence notices (React, MIT; axe-core, MPL-2.0 with source location) generated
+  from the modules actually bundled, and required by the build validator.
+- Privacy policy (`PRIVACY.md`) and Chrome Web Store listing material (`docs/store-listing.md`).
+- Manual real-site smoke test (`npm run smoke:real-sites`); results in `docs/accuracy.md`.
 - Release workflow: pushing a `vX.Y.Z` tag re-runs every check and publishes a GitHub release
   with a reproducible store zip, its SHA-256 checksum and the changelog notes.
 - Regression suite: 11 fixture pages (contrast edge cases, shadow DOM, dynamic content, frames,

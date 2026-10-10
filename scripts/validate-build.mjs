@@ -24,6 +24,9 @@ const FORBIDDEN_KEYS = [
 /** Files the service worker injects with chrome.scripting.executeScript. */
 export const INJECTED_FILES = ['scanner.js'];
 
+/** Licence notices for bundled third-party code (MIT, MPL-2.0); see vite.notices.ts. */
+export const NOTICE_FILES = ['THIRD_PARTY_NOTICES.txt', 'THIRD_PARTY_NOTICES_SCANNER.txt'];
+
 const FORBIDDEN_FILE = /\.(pem|crx|env)$|(^|\/)\.env/;
 
 /**
@@ -102,6 +105,9 @@ export function validateBuild({ manifest, files, packageVersion, sources = {} })
   // Injected by path at runtime, so the manifest does not mention it.
   for (const path of INJECTED_FILES) {
     if (!fileSet.has(path)) errors.push(`build is missing injected file ${path}`);
+  }
+  for (const path of NOTICE_FILES) {
+    if (!fileSet.has(path)) errors.push(`build is missing licence notices ${path}`);
   }
 
   for (const file of files) {

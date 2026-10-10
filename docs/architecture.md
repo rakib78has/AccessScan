@@ -156,4 +156,5 @@ schema, so the two can evolve independently.
 5. **Reporting**: JSON and CSV export with injection protection. _(done)_
 6. **Regression coverage**: edge-case fixtures, golden-file regression suite, accuracy notes. _(done)_
 7. **Release pipeline**: tag-driven release workflow, reproducible packaging, security review. _(done)_
-8. Release readiness: documentation, manual cross-site verification, Web Store review.
+8. **Release readiness**: real-site smoke test, licence notices, privacy policy, store listing
+   and policy review, release candidate 0.1.0. _(done, except the publisher's manual checks)_

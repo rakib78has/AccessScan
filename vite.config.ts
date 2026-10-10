@@ -4,6 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { defineConfig, type Plugin } from 'vite';
 import { MINIMUM_CHROME_VERSION, buildManifest } from './manifest.config.ts';
+import { noticesPlugin } from './vite.notices.ts';
 
 const root = import.meta.dirname;
 
@@ -33,7 +34,12 @@ export default defineConfig(({ mode }) => ({
   root: resolve(root, 'src'),
   publicDir: resolve(root, 'public'),
   base: './',
-  plugins: [react(), tailwindcss(), manifestPlugin(mode === 'e2e')],
+  plugins: [
+    react(),
+    tailwindcss(),
+    manifestPlugin(mode === 'e2e'),
+    noticesPlugin('THIRD_PARTY_NOTICES.txt'),
+  ],
   build: {
     // The e2e build goes to its own folder so it can never be packaged by mistake.
     outDir: resolve(root, mode === 'e2e' ? 'dist-e2e' : 'dist'),

@@ -24,7 +24,8 @@
     "verify": "npm run format:check && npm run lint && npm run typecheck && npm run test && npm run build && npm run validate:build",
     "build:e2e": "vite build --mode e2e && vite build --config vite.scanner.config.ts --mode e2e",
     "package": "node scripts/package.mjs",
-    "release:check": "node scripts/release-check.mjs"
+    "release:check": "node scripts/release-check.mjs",
+    "smoke:real-sites": "npm run build && playwright test --config playwright.smoke.config.ts"
   },
   "dependencies": {
     "axe-core": "4.14.0",
