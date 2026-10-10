@@ -41,6 +41,11 @@ Chromium through Playwright.
 | `violations.html` | One known violation per rule, each with an id the tests assert on                |
 | `iframe.html`     | A cross-origin frame that cannot be scanned and must be reported for review      |
 | `large.html`      | 4,000 script-generated rows, slow enough to navigate away mid-scan               |
+| `seo-issues.html` | Five known SEO findings and no accessibility violations                          |
+
+`clean.html` and `violations.html` carry valid SEO metadata so each page tests one thing.
+SEO rules are unit-tested in jsdom against a known-good `<head>` with one line changed per
+case (`tests/unit/seo-rules.test.ts`).
 
 Fixtures are excluded from Prettier, since reformatting can change what a rule sees.
 
@@ -63,7 +68,9 @@ npx playwright test tests/e2e/scan.spec.ts --repeat-each=5   # flakiness check
   verified this by deleting each key check in turn (busy guard, result validation, stale-page
   check, sender URL check, https help URLs, node cap) and confirming a test failed. Milestone 3
   did the same for the help link's `rel`, lazy rendering, invalid selectors, the severity
-  filter and overlay replacement.
+  filter and overlay replacement. Milestone 4 did it for SVG titles, case-insensitive meta
+  names, exact `noindex` matching, review-only length checks, canonical URL schemes and the
+  passed-rule count.
 
 ## Things jsdom cannot test
 

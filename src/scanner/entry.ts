@@ -1,7 +1,9 @@
 import axe from 'axe-core';
 import { redactUrl } from '../shared/url';
 import { normalizeAxeResults } from './accessibility/normalize';
+import { withSeoResults } from './combine';
 import './global';
+import { runSeoChecks } from './seo/seo-rules';
 
 /** How long axe waits for an iframe to answer. Frames SiteCheck cannot access never will. */
 const FRAME_WAIT_MS = 1000;
@@ -15,9 +17,12 @@ globalThis.__siteCheckScan = async () => {
     iframes: true,
     frameWaitTime: FRAME_WAIT_MS,
   });
-  return normalizeAxeResults(results, {
+  // The full URL is used only to resolve canonical links; it is never stored.
+  const seo = runSeoChecks(document, location.href);
+  const accessibility = normalizeAxeResults(results, {
     pageUrl: redactUrl(location.href),
     scannedAt,
     durationMs: performance.now() - started,
   });
+  return withSeoResults(accessibility, seo);
 };

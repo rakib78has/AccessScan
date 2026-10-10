@@ -64,6 +64,7 @@ test('SC-E2E-004 reports no violations on the clean page', async ({
 
   const result = resultFor(await storedScans(), '/clean.html');
   expect(result.findings.filter((f) => f.outcome === 'violation')).toEqual([]);
+  expect(result.findings.filter((f) => f.source === 'seo')).toEqual([]);
   expect(result.passedRuleCount).toBeGreaterThan(10);
 });
 

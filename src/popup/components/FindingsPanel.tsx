@@ -55,7 +55,7 @@ export function FindingsPanel({ result, onHighlight, highlightMessage }: Props) 
             ? filter.outcome === 'violation'
               ? 'Automated checks found no violations. That is not proof the page is accessible.'
               : 'Nothing needs manual review from the automated checks.'
-            : 'No findings match the selected severities.'}
+            : 'No findings match the selected filters.'}
         </p>
       )}
     </section>

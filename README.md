@@ -3,9 +3,11 @@
 A Chrome extension that finds common accessibility and basic SEO issues on the page you are
 viewing.
 
-> **Status: Milestone 3 (results UI).** SiteCheck scans the current page with axe-core, lists
-> each finding with its affected elements and how to fix it, filters by outcome and severity,
-> and highlights an element on the page. SEO checks arrive in Milestone 4. See [docs/architecture.md](docs/architecture.md) for the roadmap.
+> **Status: Milestone 4 (SEO checks).** SiteCheck checks the current page for accessibility
+> problems with axe-core and for basic SEO problems (title, meta description, viewport,
+> `noindex`, canonical links) with its own rules. It lists each finding with how to fix it,
+> filters by outcome, category and severity, and highlights elements on the page. Export
+> arrives in Milestone 5. See [docs/architecture.md](docs/architecture.md) for the roadmap.
 
 Automated checks find only a subset of accessibility problems. A clean SiteCheck result does
 not mean a page conforms to WCAG; manual testing is still required.
@@ -58,4 +60,5 @@ The first `test:e2e` run on a machine needs `npx playwright install chromium`.
   Local `file://` pages need "Allow access to file URLs" turned on for SiteCheck.
 - The contents of iframes are not scanned; each frame is listed as needing review.
 - Scans that take longer than 25 seconds are stopped.
+- SEO checks see the rendered page only, not HTTP headers or `robots.txt`.
 - See [docs/architecture.md](docs/architecture.md#known-limitations) for details.

@@ -21,6 +21,8 @@ export function FindingItem({ finding, onHighlight }: Props) {
   const [open, setOpen] = useState(false);
   const { criteria, levels } = formatWcagTags(finding.wcagTags);
   const elementWord = finding.nodeCount === 1 ? 'element' : 'elements';
+  // Rules about something missing (such as no meta description) concern the whole page.
+  const wholePage = finding.nodeCount === 0;
 
   return (
     <li className="rounded-md border border-slate-300 dark:border-slate-600">
@@ -31,9 +33,16 @@ export function FindingItem({ finding, onHighlight }: Props) {
       >
         <summary className="flex cursor-pointer items-start gap-2 p-2 text-sm focus-visible:outline-2 focus-visible:outline-blue-700 dark:focus-visible:outline-blue-300">
           <ImpactBadge severity={severityOf(finding)} />
-          <span className="grow">{finding.title}</span>
+          <span className="grow">
+            {finding.source === 'seo' && (
+              <span className="mr-1 rounded bg-violet-100 px-1 text-xs font-medium text-violet-900 dark:bg-violet-950 dark:text-violet-100">
+                SEO
+              </span>
+            )}
+            {finding.title}
+          </span>
           <span className="shrink-0 text-xs text-slate-600 dark:text-slate-300">
-            {finding.nodeCount} {elementWord}
+            {wholePage ? 'Whole page' : `${String(finding.nodeCount)} ${elementWord}`}
           </span>
         </summary>
 
@@ -60,7 +69,7 @@ export function FindingItem({ finding, onHighlight }: Props) {
               </a>
             )}
 
-            <h3 className="text-xs font-semibold">Affected {elementWord}</h3>
+            {!wholePage && <h3 className="text-xs font-semibold">Affected {elementWord}</h3>}
             <ol className="flex flex-col gap-2">
               {finding.nodes.map((node, index) => (
                 <li

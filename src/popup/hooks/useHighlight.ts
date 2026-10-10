@@ -10,6 +10,8 @@ const MESSAGES: Record<HighlightOutcome | 'failed', string> = {
   shown: 'Highlighted on the page.',
   'not-found': 'That element is no longer on the page. Scan again to refresh the results.',
   'in-frame': 'That element is inside a frame, which SiteCheck cannot highlight.',
+  'not-visible':
+    'That element is not displayed on the page (for example, it is in the page head or hidden).',
   failed: 'SiteCheck cannot reach this page. Click the SiteCheck icon on this tab again.',
 };
 

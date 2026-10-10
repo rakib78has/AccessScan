@@ -19,8 +19,8 @@ export function ScanSummary({ result }: Props) {
         <Stat label="Rules passed" value={result.passedRuleCount} testId="count-passed" />
       </dl>
       <p className="text-xs text-slate-600 dark:text-slate-300">
-        Checked with axe-core {result.engine.version} in {Math.round(result.durationMs / 100) / 10}{' '}
-        s. Counts are rules, not elements.
+        Accessibility checked with axe-core {result.engine.version}, SEO with SiteCheck&apos;s own
+        rules, in {Math.round(result.durationMs / 100) / 10} s. Counts are rules, not elements.
       </p>
     </section>
   );

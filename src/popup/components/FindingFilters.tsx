@@ -1,11 +1,12 @@
-import type { Finding, Outcome } from '../../shared/types/scan';
+import { FINDING_SOURCES, type Finding, type Outcome } from '../../shared/types/scan';
 import {
   SEVERITY_BUCKETS,
   SEVERITY_LABELS,
+  SOURCE_LABELS,
   countByOutcome,
   countBySeverity,
+  countBySource,
   type FindingFilter,
-  type SeverityBucket,
 } from '../filters';
 
 interface Props {
@@ -21,16 +22,6 @@ const OUTCOME_LABELS: Record<Outcome, string> = {
 
 export function FindingFilters({ findings, filter, onChange }: Props) {
   const outcomeCounts = countByOutcome(findings);
-  const severityCounts = countBySeverity(findings, filter.outcome);
-  // Severities with nothing to show would only add noise.
-  const visibleSeverities = SEVERITY_BUCKETS.filter((s) => severityCounts[s] > 0);
-
-  const toggleSeverity = (severity: SeverityBucket, checked: boolean) => {
-    const severities = new Set(filter.severities);
-    if (checked) severities.add(severity);
-    else severities.delete(severity);
-    onChange({ ...filter, severities });
-  };
 
   return (
     <div className="flex flex-col gap-2 text-sm">
@@ -52,23 +43,69 @@ export function FindingFilters({ findings, filter, onChange }: Props) {
         ))}
       </fieldset>
 
-      {visibleSeverities.length > 0 && (
-        <fieldset className="flex flex-wrap gap-x-3 gap-y-1">
-          <legend className="mb-1 text-xs font-semibold">Severity</legend>
-          {visibleSeverities.map((severity) => (
-            <label key={severity} className="flex items-center gap-1 text-xs">
-              <input
-                type="checkbox"
-                checked={filter.severities.has(severity)}
-                onChange={(event) => {
-                  toggleSeverity(severity, event.currentTarget.checked);
-                }}
-              />
-              {SEVERITY_LABELS[severity]} ({severityCounts[severity]})
-            </label>
-          ))}
-        </fieldset>
-      )}
+      <CheckboxGroup
+        legend="Category"
+        options={FINDING_SOURCES}
+        labels={SOURCE_LABELS}
+        counts={countBySource(findings, filter)}
+        selected={filter.sources}
+        onChange={(sources) => {
+          onChange({ ...filter, sources });
+        }}
+      />
+      <CheckboxGroup
+        legend="Severity"
+        options={SEVERITY_BUCKETS}
+        labels={SEVERITY_LABELS}
+        counts={countBySeverity(findings, filter)}
+        selected={filter.severities}
+        onChange={(severities) => {
+          onChange({ ...filter, severities });
+        }}
+      />
     </div>
+  );
+}
+
+interface GroupProps<T extends string> {
+  legend: string;
+  options: readonly T[];
+  labels: Record<T, string>;
+  counts: Record<T, number>;
+  selected: ReadonlySet<T>;
+  onChange: (selected: ReadonlySet<T>) => void;
+}
+
+function CheckboxGroup<T extends string>({
+  legend,
+  options,
+  labels,
+  counts,
+  selected,
+  onChange,
+}: GroupProps<T>) {
+  // Options with nothing to show are noise, but an unticked one stays so it can be ticked again.
+  const visible = options.filter((o) => counts[o] > 0 || !selected.has(o));
+  if (visible.length === 0) return null;
+
+  return (
+    <fieldset className="flex flex-wrap gap-x-3 gap-y-1">
+      <legend className="mb-1 text-xs font-semibold">{legend}</legend>
+      {visible.map((option) => (
+        <label key={option} className="flex items-center gap-1 text-xs">
+          <input
+            type="checkbox"
+            checked={selected.has(option)}
+            onChange={(event) => {
+              const next = new Set(selected);
+              if (event.currentTarget.checked) next.add(option);
+              else next.delete(option);
+              onChange(next);
+            }}
+          />
+          {labels[option]} ({counts[option]})
+        </label>
+      ))}
+    </fieldset>
   );
 }

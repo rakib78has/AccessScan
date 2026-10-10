@@ -1,0 +1,24 @@
+<!doctype html>
+<!--
+  Known SEO problems; accessibility is otherwise clean. Expected SEO findings:
+    seo-title-length              needs-review  (title "Hi" is too short)
+    seo-meta-description-missing  violation
+    seo-viewport-missing          violation
+    seo-noindex                   needs-review
+    seo-canonical-multiple        violation
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Hi</title>
+    <meta name="robots" content="noindex, follow" />
+    <link rel="canonical" href="http://127.0.0.1:4173/seo-issues.html" />
+    <link rel="canonical" href="/seo-issues.html?variant=b" />
+  </head>
+  <body>
+    <main>
+      <h1>A page with SEO problems</h1>
+      <p>Body text.</p>
+    </main>
+  </body>
+</html>

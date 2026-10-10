@@ -62,7 +62,7 @@ describe('SC-UI-006 findings list and filters', () => {
     expect(findingTitles()).toEqual(['ModerateContent in landmarks1 element']);
     await user.click(screen.getByRole('checkbox', { name: 'Moderate (1)' }));
     expect(screen.getByTestId('findings-empty')).toHaveTextContent(
-      'No findings match the selected severities.',
+      'No findings match the selected filters.',
     );
   });
 
@@ -71,11 +71,49 @@ describe('SC-UI-006 findings list and filters', () => {
     expect(screen.queryByRole('checkbox', { name: /Minor/ })).toBeNull();
   });
 
+  it('filters by category, and keeps an unticked option available', async () => {
+    const seoFinding = makeFinding({
+      ruleId: 'seo-viewport-missing',
+      source: 'seo',
+      impact: 'moderate',
+      title: 'Page has no viewport meta tag',
+      nodeCount: 0,
+      nodes: [],
+    });
+    const { user } = renderPanel(makeScanResult({ findings: [...result.findings, seoFinding] }));
+    await user.click(screen.getByRole('checkbox', { name: 'Accessibility (2)' }));
+    expect(findingTitles()).toEqual(['ModerateSEOPage has no viewport meta tagWhole page']);
+    // Counts follow the other filters: only one moderate finding is now in view.
+    expect(screen.getByRole('checkbox', { name: 'Moderate (1)' })).toBeChecked();
+    await user.click(screen.getByRole('checkbox', { name: 'Accessibility (2)' }));
+    expect(findingTitles()).toHaveLength(3);
+  });
+
   it('does not call a clean result proof of accessibility', () => {
     renderPanel(makeScanResult({ findings: [] }));
     expect(screen.getByTestId('findings-empty')).toHaveTextContent(
       'That is not proof the page is accessible.',
     );
+  });
+});
+
+describe('SC-UI-010 page-wide findings', () => {
+  it('explains the fix without listing elements or offering a highlight', async () => {
+    const finding = makeFinding({
+      ruleId: 'seo-meta-description-missing',
+      source: 'seo',
+      title: 'Page has no meta description',
+      description: 'Add <meta name="description" content="…">.',
+      wcagTags: [],
+      nodeCount: 0,
+      nodes: [],
+    });
+    const { user } = renderPanel(makeScanResult({ findings: [finding] }));
+    await user.click(screen.getByText('Page has no meta description'));
+    expect(screen.getByText('Add <meta name="description" content="…">.')).toBeInTheDocument();
+    expect(screen.queryByText(/Affected/)).toBeNull();
+    expect(screen.queryByRole('button', { name: /Highlight/ })).toBeNull();
+    expect(screen.queryByText(/WCAG/)).toBeNull();
   });
 });
 
