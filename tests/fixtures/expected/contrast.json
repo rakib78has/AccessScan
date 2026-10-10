@@ -1,0 +1,25 @@
+[
+  {
+    "outcome": "needs-review",
+    "source": "axe",
+    "ruleId": "color-contrast",
+    "impact": "serious",
+    "nodeCount": 2,
+    "targets": [
+      "#gradient",
+      "#image"
+    ]
+  },
+  {
+    "outcome": "violation",
+    "source": "axe",
+    "ruleId": "color-contrast",
+    "impact": "serious",
+    "nodeCount": 3,
+    "targets": [
+      "#fail",
+      "#small-same",
+      "#translucent"
+    ]
+  }
+]

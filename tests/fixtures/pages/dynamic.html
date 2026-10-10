@@ -1,0 +1,39 @@
+<!doctype html>
+<!--
+  Content that changes after load. Intent:
+    #late-image is inserted 200 ms after load without alt; a scan after that
+    reports it (tests wait for it to exist first).
+    #add-field inserts an unlabeled #late-input when clicked. A scan taken
+    before the click does not report it; a scan after the click does.
+    Scans are snapshots of the page at the moment they run.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dynamic content fixture</title>
+    <meta name="description" content="A test page whose content changes after load and after a click, used by SiteCheck tests." />
+  </head>
+  <body>
+    <main>
+      <h1>Dynamic content</h1>
+      <div id="slot"></div>
+      <button id="add-field" type="button">Add a field</button>
+      <form id="form"></form>
+    </main>
+    <script>
+      setTimeout(() => {
+        const img = document.createElement('img');
+        img.id = 'late-image';
+        img.src = 'data:image/gif;base64,R0lGODlhAQABAAAAACw=';
+        document.getElementById('slot').append(img);
+      }, 200);
+      document.getElementById('add-field').addEventListener('click', () => {
+        const input = document.createElement('input');
+        input.id = 'late-input';
+        input.type = 'text';
+        document.getElementById('form').append(input);
+      });
+    </script>
+  </body>
+</html>

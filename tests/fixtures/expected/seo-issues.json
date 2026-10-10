@@ -1,0 +1,49 @@
+[
+  {
+    "outcome": "needs-review",
+    "source": "seo",
+    "ruleId": "seo-noindex",
+    "impact": "serious",
+    "nodeCount": 1,
+    "targets": [
+      "html > head > meta:nth-of-type(2)"
+    ]
+  },
+  {
+    "outcome": "needs-review",
+    "source": "seo",
+    "ruleId": "seo-title-length",
+    "impact": "minor",
+    "nodeCount": 1,
+    "targets": [
+      "html > head > title"
+    ]
+  },
+  {
+    "outcome": "violation",
+    "source": "seo",
+    "ruleId": "seo-canonical-multiple",
+    "impact": "serious",
+    "nodeCount": 2,
+    "targets": [
+      "html > head > link:nth-of-type(1)",
+      "html > head > link:nth-of-type(2)"
+    ]
+  },
+  {
+    "outcome": "violation",
+    "source": "seo",
+    "ruleId": "seo-meta-description-missing",
+    "impact": "moderate",
+    "nodeCount": 0,
+    "targets": []
+  },
+  {
+    "outcome": "violation",
+    "source": "seo",
+    "ruleId": "seo-viewport-missing",
+    "impact": "moderate",
+    "nodeCount": 0,
+    "targets": []
+  }
+]

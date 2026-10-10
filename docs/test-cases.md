@@ -57,6 +57,9 @@ actually completed.
 | SC-E2E-014  | SEO             | Highlighting an element in `<head>` explains it is not displayed        | Yes       | 2026-10-10 | Pass    |
 | SC-E2E-015  | Export          | Real JSON download matches the scan                                     | Yes       | 2026-10-10 | Pass    |
 | SC-E2E-016  | Export          | Real CSV download parses, one row per affected element                  | Yes       | 2026-10-10 | Pass    |
+| SC-E2E-017  | Regression      | Each of 11 fixtures matches its reviewed golden findings file           | Yes       | 2026-10-10 | Pass    |
+| SC-E2E-018  | Regression      | Content added after a scan appears only after a rescan                  | Yes       | 2026-10-10 | Pass    |
+| SC-E2E-019  | Regression      | Highlighting reaches into an open shadow root                           | Yes       | 2026-10-10 | Pass    |
 | SC-MAN-001  | Extension       | Loads unpacked in desktop Chrome; popup opens from the toolbar          | No        | n/a        | Not run |
 | SC-MAN-002  | Scan            | Real `activeTab` flow: scan a public site after clicking the icon       | No        | n/a        | Not run |
 

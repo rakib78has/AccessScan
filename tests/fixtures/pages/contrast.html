@@ -1,0 +1,41 @@
+<!doctype html>
+<!--
+  Colour contrast edge cases (WCAG 1.4.3: 4.5:1 for normal text, 3:1 for large).
+    #fail          #999 on white, about 2.8:1           expected: violation
+    #pass          #595959 on white, about 7:1          expected: pass
+    #large-pass    #949494 on white, about 3.0:1, 24px  expected: pass (large text needs 3:1)
+    #small-same    the same colour at 14px              expected: violation
+    #gradient      text over a gradient                 expected: needs review (no single background)
+    #image         text over a background image         expected: needs review
+    #translucent   rgba(0,0,0,0.3) text, about 2.1:1    expected: violation (opacity is accounted for)
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Colour contrast fixture</title>
+    <meta name="description" content="A test page with colour contrast edge cases, used by SiteCheck tests to check accuracy." />
+    <style>
+      body { background: #ffffff; color: #1a1a1a; font: 14px/1.5 sans-serif; }
+      #fail { color: #999999; }
+      #pass { color: #595959; }
+      #large-pass { color: #949494; font-size: 24px; }
+      #small-same { color: #949494; font-size: 14px; }
+      #gradient { background: linear-gradient(90deg, #ffffff, #000000); color: #777777; padding: 8px; }
+      #image { background: url('data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACw=') repeat; color: #777777; padding: 8px; }
+      #translucent { color: rgba(0, 0, 0, 0.3); }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Contrast</h1>
+      <p id="fail">Light grey text.</p>
+      <p id="pass">Dark grey text.</p>
+      <p id="large-pass">Large grey text.</p>
+      <p id="small-same">Small text in the same grey.</p>
+      <p id="gradient">Text over a gradient.</p>
+      <p id="image">Text over an image.</p>
+      <p id="translucent">Semi-transparent text.</p>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,28 @@
+[
+  {
+    "outcome": "needs-review",
+    "source": "axe",
+    "ruleId": "frame-tested",
+    "impact": "critical",
+    "nodeCount": 1,
+    "targets": [
+      "#third-party"
+    ]
+  },
+  {
+    "outcome": "violation",
+    "source": "seo",
+    "ruleId": "seo-meta-description-missing",
+    "impact": "moderate",
+    "nodeCount": 0,
+    "targets": []
+  },
+  {
+    "outcome": "violation",
+    "source": "seo",
+    "ruleId": "seo-viewport-missing",
+    "impact": "moderate",
+    "nodeCount": 0,
+    "targets": []
+  }
+]

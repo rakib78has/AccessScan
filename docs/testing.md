@@ -35,15 +35,40 @@ Chromium through Playwright.
 
 ## Fixture pages
 
-| Page              | Purpose                                                                          |
-| ----------------- | -------------------------------------------------------------------------------- |
-| `clean.html`      | No violations; the valid side of each rule, including decorative `alt=""` images |
-| `violations.html` | One known violation per rule, each with an id the tests assert on                |
-| `iframe.html`     | A cross-origin frame that cannot be scanned and must be reported for review      |
-| `large.html`      | 4,000 script-generated rows, slow enough to navigate away mid-scan               |
-| `seo-issues.html` | Five known SEO findings and no accessibility violations                          |
+| Page                      | Purpose                                                                               |
+| ------------------------- | ------------------------------------------------------------------------------------- |
+| `clean.html`              | No violations; the valid side of each rule, including decorative `alt=""` images      |
+| `violations.html`         | One known violation per rule, each with an id the tests assert on                     |
+| `iframe.html`             | A cross-origin frame that cannot be scanned and must be reported for review           |
+| `large.html`              | 4,000 script-generated rows, slow enough to navigate away mid-scan                    |
+| `seo-issues.html`         | Five known SEO findings and no accessibility violations                               |
+| `contrast.html`           | Fail, pass, large text at 3:1, gradient, image and semi-transparent text              |
+| `shadow-dom.html`         | The same problems inside an open and a closed shadow root                             |
+| `unusual-markup.html`     | Invalid nesting, hidden and inert content, long attributes, RTL, emoji, duplicate ids |
+| `dynamic.html`            | Content inserted after load and after a click                                         |
+| `nested-frames.html`      | Same-origin frames nested two deep                                                    |
+| `empty.html`, `bare.html` | An empty body, and a document with nothing but `<html>`                               |
 
 `clean.html` and `violations.html` carry valid SEO metadata so each page tests one thing.
+
+## Regression suite (golden files)
+
+`tests/e2e/regression.spec.ts` scans every fixture except `large.html` in real Chromium and
+compares the findings (rule, outcome, impact, element count and selectors) with
+`tests/fixtures/expected/<page>.json`. Timings and dates are left out so results are stable.
+Any change, such as an axe-core upgrade that adds or reclassifies a finding, fails with the
+exact difference.
+
+After an intended change:
+
+```sh
+npm run build:e2e
+UPDATE_GOLDEN=1 npx playwright test tests/e2e/regression.spec.ts
+git diff tests/fixtures/expected   # review every changed line before committing
+```
+
+A golden file records what SiteCheck reports, not what is true. Each one was reviewed against
+its page when created; [accuracy.md](accuracy.md) lists which entries are known misses.
 SEO rules are unit-tested in jsdom against a known-good `<head>` with one line changed per
 case (`tests/unit/seo-rules.test.ts`).
 
