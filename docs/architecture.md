@@ -101,6 +101,14 @@ includes checks that did not run (title length when there is no title, for examp
   reported by both axe (accessibility, WCAG 2.4.2) and the SEO check, since they are different
   reasons to fix the same thing.
 
+**Exports are pure functions, saved without a permission.** `src/reports/exporters/` turns a
+`ScanResult` into JSON or CSV text and is unit-tested without a browser. The popup saves the
+text through a temporary Blob link, which needs no extension permission; `chrome.downloads`
+would add a `downloads` permission and an install warning for no gain. Reports include every
+finding regardless of the popup's filters, so a report never depends on which boxes were
+ticked. The JSON report carries its own `reportSchemaVersion`, separate from the stored scan
+schema, so the two can evolve independently.
+
 ## Source layout
 
 | Path                     | Responsibility                                                               |
@@ -108,6 +116,7 @@ includes checks that did not run (title length when there is no title, for examp
 | `manifest.config.ts`     | The manifest, as a pure function of the version                              |
 | `src/popup/`             | Popup UI; Chrome calls live in `hooks/`, logic in `filters.ts` and `wcag.ts` |
 | `src/content/`           | Functions injected into the page on demand (element highlight)               |
+| `src/reports/`           | JSON and CSV exporters and download file names                               |
 | `src/background/`        | Service worker, message handler, orchestrator, Chrome glue                   |
 | `src/scanner/`           | Injected bundle: axe-core run, SEO checks (`seo/`), normalization            |
 | `src/messaging/`         | Message contracts and runtime guards for trust boundaries                    |
@@ -142,7 +151,7 @@ includes checks that did not run (title length when there is no title, for examp
 2. **Scanner foundation**: message contracts, orchestration, axe-core, error handling. _(done)_
 3. **Results UI**: findings list, filters, fix guidance, highlighting, error boundary. _(done)_
 4. **SEO checks**: title, meta description, viewport, robots, canonical. _(done)_
-5. Reporting: JSON and CSV export with injection protection.
+5. **Reporting**: JSON and CSV export with injection protection. _(done)_
 6. Browser automation: wider end-to-end journeys and regression fixtures.
 7. CI/CD and security: release workflow, packaging, security review.
 8. Release readiness: documentation, manual cross-site verification, Web Store review.

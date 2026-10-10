@@ -3,11 +3,11 @@
 A Chrome extension that finds common accessibility and basic SEO issues on the page you are
 viewing.
 
-> **Status: Milestone 4 (SEO checks).** SiteCheck checks the current page for accessibility
+> **Status: Milestone 5 (reporting).** SiteCheck checks the current page for accessibility
 > problems with axe-core and for basic SEO problems (title, meta description, viewport,
 > `noindex`, canonical links) with its own rules. It lists each finding with how to fix it,
-> filters by outcome, category and severity, and highlights elements on the page. Export
-> arrives in Milestone 5. See [docs/architecture.md](docs/architecture.md) for the roadmap.
+> filters by outcome, category and severity, highlights elements on the page, and exports
+> reports as JSON or CSV. See [docs/architecture.md](docs/architecture.md) for the roadmap.
 
 Automated checks find only a subset of accessibility problems. A clean SiteCheck result does
 not mean a page conforms to WCAG; manual testing is still required.

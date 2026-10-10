@@ -29,6 +29,12 @@ cannot be released by mistake.
   credentials, which can carry tokens, are dropped before storage.
 - Each finding keeps at most 50 elements, with HTML snippets cut to 300 characters.
 - Logs contain error codes only, never page content or URLs.
+- Exports are created in the popup and saved through the browser's own download, with no
+  `downloads` permission and no upload. They contain page content (HTML snippets, selectors)
+  and the page URL without its query string, so treat exported files as you would the page.
+
+The CSV protection's known trade-off: a cell that legitimately begins with `-` or `+` (such as
+`-5`) is exported as `'-5`. Correctness of a spreadsheet formula is never worth the risk.
 
 ## Threat model (summary)
 
@@ -45,7 +51,8 @@ cannot be released by mistake.
 | Over-broad access                            | `activeTab` only, enforced by the build validator                                                                         | Active |
 | Secrets in the package                       | Build validator rejects `.pem`, `.crx` and `.env` files                                                                   | Active |
 | Compromised CI dependency                    | `npm ci` from the lockfile; exact dependency versions; actions pinned to commit SHAs; read-only token                     | Active |
-| Spreadsheet formula injection in CSV exports | Cells starting with `=`, `+`, `-`, `@`, tab or carriage return are neutralized                                            | M5     |
+| Spreadsheet formula injection in CSV exports | Cells starting with `=`, `+`, `-`, `@`, tab or carriage return get a leading `'` (OWASP); every field quoted (SC-SEC-002) | Active |
+| Unsafe characters in download file names     | Host reduced to `a-z 0-9 . -`, capped at 60 characters; fixed `sitecheck-…` prefix (SC-UNIT-015)                          | Active |
 
 ## Known risks
 

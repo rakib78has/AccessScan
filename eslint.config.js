@@ -13,6 +13,9 @@ export default tseslint.config(
       parserOptions: { projectService: true, tsconfigRootDir: import.meta.dirname },
     },
     rules: {
+      // Invisible characters (BOM, line separators) inside strings are easy to corrupt or
+      // delete unseen; write them as escapes such as \uFEFF.
+      'no-irregular-whitespace': ['error', { skipStrings: false, skipTemplates: false }],
       'no-eval': 'error',
       'no-implied-eval': 'off',
       '@typescript-eslint/no-implied-eval': 'error',
