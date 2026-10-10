@@ -73,20 +73,33 @@ contains axe-core; it is read from disk and parsed once per scan.
 **No `eslint-plugin-jsx-a11y`.** Its latest release does not support ESLint 10. The popup is
 instead tested with axe-core itself, in jsdom and in real Chromium.
 
+**Highlighting runs from the popup.** `useHighlight` calls `chrome.scripting.executeScript`
+directly with `highlightElement` from `src/content/highlight.ts`. It is a short user action
+and the popup already holds the `activeTab` grant, so routing it through the worker would add
+a message type without adding safety. The selector is page-derived, so it travels in `args`
+(serialized data) and is only ever passed to `querySelector`. The function must be
+self-contained because Chrome serializes it into the page. It draws a separate overlay
+element and never changes the page's own elements or styles.
+
+**Findings use native `<details>`.** Keyboard and screen reader behaviour come from the
+browser with no custom ARIA. Affected elements render only when a finding is opened, since a
+large page can list thousands.
+
 ## Source layout
 
-| Path                     | Responsibility                                             |
-| ------------------------ | ---------------------------------------------------------- |
-| `manifest.config.ts`     | The manifest, as a pure function of the version            |
-| `src/popup/`             | Popup UI; `hooks/useScan.ts` holds all of its Chrome calls |
-| `src/background/`        | Service worker, message handler, orchestrator, Chrome glue |
-| `src/scanner/`           | Injected bundle: axe-core run and result normalization     |
-| `src/messaging/`         | Message contracts and runtime guards for trust boundaries  |
-| `src/storage/`           | Per-tab scan state in `chrome.storage.session`             |
-| `src/shared/`            | Result schema, error codes and messages, URL checks        |
-| `src/styles/`            | Tailwind entry stylesheet                                  |
-| `scripts/`               | Build validation (and, later, packaging)                   |
-| `vite.scanner.config.ts` | Builds `scanner.js` as a self-contained classic script     |
+| Path                     | Responsibility                                                               |
+| ------------------------ | ---------------------------------------------------------------------------- |
+| `manifest.config.ts`     | The manifest, as a pure function of the version                              |
+| `src/popup/`             | Popup UI; Chrome calls live in `hooks/`, logic in `filters.ts` and `wcag.ts` |
+| `src/content/`           | Functions injected into the page on demand (element highlight)               |
+| `src/background/`        | Service worker, message handler, orchestrator, Chrome glue                   |
+| `src/scanner/`           | Injected bundle: axe-core run and result normalization                       |
+| `src/messaging/`         | Message contracts and runtime guards for trust boundaries                    |
+| `src/storage/`           | Per-tab scan state in `chrome.storage.session`                               |
+| `src/shared/`            | Result schema, error codes and messages, URL checks                          |
+| `src/styles/`            | Tailwind entry stylesheet                                                    |
+| `scripts/`               | Build validation (and, later, packaging)                                     |
+| `vite.scanner.config.ts` | Builds `scanner.js` as a self-contained classic script                       |
 
 ## Known limitations
 
@@ -98,12 +111,15 @@ instead tested with axe-core itself, in jsdom and in real Chromium.
   scanned at.
 - **Scans longer than 25 s time out**, to stay within the service worker's idle lifetime.
 - Closed shadow roots cannot be inspected; open shadow roots are.
+- Elements inside iframes cannot be highlighted. Inside a container that scrolls on its own,
+  the highlight can drift if that container is scrolled while it shows; it disappears after
+  3 seconds.
 
 ## Milestones
 
 1. **Scaffold**: toolchain, valid MV3 package, popup shell, smoke tests, CI. _(done)_
 2. **Scanner foundation**: message contracts, orchestration, axe-core, error handling. _(done)_
-3. Results UI: findings list, filters, remediation, loading and error states.
+3. **Results UI**: findings list, filters, fix guidance, highlighting, error boundary. _(done)_
 4. SEO checks: title, meta description, viewport, robots, canonical.
 5. Reporting: JSON and CSV export with injection protection.
 6. Browser automation: wider end-to-end journeys and regression fixtures.

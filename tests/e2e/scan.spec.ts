@@ -5,9 +5,7 @@ import type { ScanState } from '../../src/storage/scan-store';
 import { expect, test } from './fixtures';
 
 async function scan(popup: Page) {
-  // Click via the DOM: the popup tab is in the background, where Playwright's
-  // animation-frame based stability check would never complete.
-  await popup.getByRole('button', { name: 'Scan this page' }).dispatchEvent('click');
+  await popup.getByRole('button', { name: 'Scan this page' }).click();
 }
 
 function resultFor(scans: Record<string, ScanState>, path: string): ScanResult {
@@ -35,7 +33,9 @@ test('SC-E2E-003 finds the known problems on a page and summarizes them', async 
   const popup = await popupFor(page);
 
   await scan(popup);
-  await expect(popup.getByRole('status')).toHaveText('Scan complete.', { timeout: 20_000 });
+  await expect(popup.getByRole('status', { name: 'Scan status' })).toHaveText('Scan complete.', {
+    timeout: 20_000,
+  });
   await expect(popup.getByTestId('count-violations')).toHaveText('4');
 
   const result = resultFor(await storedScans(), '/violations.html');
@@ -57,7 +57,9 @@ test('SC-E2E-004 reports no violations on the clean page', async ({
   const popup = await popupFor(page);
 
   await scan(popup);
-  await expect(popup.getByRole('status')).toHaveText('Scan complete.', { timeout: 20_000 });
+  await expect(popup.getByRole('status', { name: 'Scan status' })).toHaveText('Scan complete.', {
+    timeout: 20_000,
+  });
   await expect(popup.getByTestId('count-violations')).toHaveText('0');
 
   const result = resultFor(await storedScans(), '/clean.html');
@@ -73,7 +75,7 @@ test('SC-E2E-005 repeated scans give identical findings', async ({
   const page = await context.newPage();
   await page.goto(`${FIXTURE_ORIGIN}/violations.html`);
   const popup = await popupFor(page);
-  const status = popup.getByRole('status');
+  const status = popup.getByRole('status', { name: 'Scan status' });
 
   await scan(popup);
   await expect(status).toHaveText('Scan complete.', { timeout: 20_000 });
@@ -110,7 +112,9 @@ test('SC-E2E-007 finishes promptly on a page with a cross-origin frame', async (
   const popup = await popupFor(page);
 
   await scan(popup);
-  await expect(popup.getByRole('status')).toHaveText('Scan complete.', { timeout: 20_000 });
+  await expect(popup.getByRole('status', { name: 'Scan status' })).toHaveText('Scan complete.', {
+    timeout: 20_000,
+  });
 
   // The frame's content was not tested, and the result must say so.
   const result = resultFor(await storedScans(), '/iframe.html');
@@ -126,7 +130,9 @@ test('SC-E2E-008 a navigation during a scan never leaves a result for the wrong 
   const popup = await popupFor(page);
 
   await scan(popup);
-  await expect(popup.getByRole('status')).toHaveText('Scanning this page…');
+  await expect(popup.getByRole('status', { name: 'Scan status' })).toHaveText(
+    'Scanning this page…',
+  );
   await page.goto(`${FIXTURE_ORIGIN}/clean.html`);
 
   // Depending on timing the scan is abandoned ("navigated") or finishes for the

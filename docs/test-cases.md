@@ -14,6 +14,8 @@ actually completed.
 | SC-UNIT-006 | Errors          | Classifies Chrome injection errors; every code has a message            | Yes       | 2026-10-10 | Pass    |
 | SC-UNIT-007 | Storage         | Round-trips state; rejects corrupt or outdated stored data; staleness   | Yes       | 2026-10-10 | Pass    |
 | SC-UNIT-008 | Popup state     | Hides results from another page and orphaned running states             | Yes       | 2026-10-10 | Pass    |
+| SC-UNIT-009 | Filters         | Outcome and severity filtering and counts, including unrated findings   | Yes       | 2026-10-10 | Pass    |
+| SC-UNIT-010 | WCAG labels     | Formats success criteria and conformance levels; ignores unknown tags   | Yes       | 2026-10-10 | Pass    |
 | SC-INT-001  | Orchestrator    | Successful scan: running, then result stored, tab watch released        | Yes       | 2026-10-10 | Pass    |
 | SC-INT-002  | Orchestrator    | Restricted pages, file access, missing tab, hidden URL, no grant        | Yes       | 2026-10-10 | Pass    |
 | SC-INT-003  | Orchestrator    | Timeout, navigation (late result ignored), closed tab, removed frame    | Yes       | 2026-10-10 | Pass    |
@@ -25,6 +27,12 @@ actually completed.
 | SC-UI-002   | Popup           | No axe violations, idle and with results (jsdom, no contrast)           | Yes       | 2026-10-10 | Pass    |
 | SC-UI-003   | Popup           | Scan request, progress, results, errors, keyboard operation             | Yes       | 2026-10-10 | Pass    |
 | SC-UI-004   | Popup           | Reopening shows stored state; page text never rendered as markup        | Yes       | 2026-10-10 | Pass    |
+| SC-UI-005   | Highlight       | Overlay leaves the page untouched; not found, invalid, shadow, frame    | Yes       | 2026-10-10 | Pass    |
+| SC-UI-006   | Findings        | Default order, outcome and severity filters, honest empty states        | Yes       | 2026-10-10 | Pass    |
+| SC-UI-007   | Findings        | Lazy details, WCAG labels, safe fix link, node cap note, highlight      | Yes       | 2026-10-10 | Pass    |
+| SC-UI-008   | Findings        | No axe violations with a finding expanded (jsdom)                       | Yes       | 2026-10-10 | Pass    |
+| SC-UI-009   | Popup           | Error boundary replaces a crashed results view                          | Yes       | 2026-10-10 | Pass    |
+| SC-SEC-001  | Findings        | Hostile markup in titles, selectors and snippets stays inert text       | Yes       | 2026-10-10 | Pass    |
 | SC-E2E-001  | Extension       | Service worker registers; popup renders with no errors                  | Yes       | 2026-10-10 | Pass    |
 | SC-E2E-002  | Popup           | No axe violations including contrast, light and dark themes             | Yes       | 2026-10-10 | Pass    |
 | SC-E2E-003  | Scan            | Finds the four known violations by element; stores no query string      | Yes       | 2026-10-10 | Pass    |
@@ -33,10 +41,15 @@ actually completed.
 | SC-E2E-006  | Scan            | Browser pages (`chrome://`) give a clear explanation                    | Yes       | 2026-10-10 | Pass    |
 | SC-E2E-007  | Scan            | Cross-origin frame: scan finishes and flags the frame for review        | Yes       | 2026-10-10 | Pass    |
 | SC-E2E-008  | Scan            | Navigating mid-scan never shows a result for the wrong page             | Yes       | 2026-10-10 | Pass    |
+| SC-E2E-009  | Findings        | Lists findings; severity and outcome filters work                       | Yes       | 2026-10-10 | Pass    |
+| SC-E2E-010  | Findings        | Opens from the keyboard; highlight overlay surrounds the element        | Yes       | 2026-10-10 | Pass    |
+| SC-E2E-011  | Findings        | Highlighting a removed element explains that it is gone                 | Yes       | 2026-10-10 | Pass    |
+| SC-E2E-012  | Findings        | Results view has no axe violations incl. contrast, both themes          | Yes       | 2026-10-10 | Pass    |
 | SC-MAN-001  | Extension       | Loads unpacked in desktop Chrome; popup opens from the toolbar          | No        | n/a        | Not run |
 | SC-MAN-002  | Scan            | Real `activeTab` flow: scan a public site after clicking the icon       | No        | n/a        | Not run |
 
-The SC-E2E-003 to 008 scan specs also passed 30 of 30 runs with `--repeat-each=5`.
+With `--repeat-each=5`, SC-E2E-003 to 008 passed 30 of 30 runs and SC-E2E-009 to 012 passed
+25 of 25.
 
 ## Details
 

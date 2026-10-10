@@ -10,6 +10,8 @@ import {
 } from '@playwright/test';
 import type { ScanState } from '../../src/storage/scan-store';
 
+export const expect = base.expect;
+
 /**
  * An extension cannot be loaded into Playwright's default browser. It needs
  * `launchPersistentContext` with `--load-extension`, using the bundled
@@ -66,7 +68,10 @@ export const test = base.extend<ExtensionFixtures>({
       await popup.goto(`chrome-extension://${extensionId}/popup/index.html`);
       await target.bringToFront();
       await popup.reload();
-      await popup.getByRole('button', { name: 'Scan this page' }).waitFor();
+      // Enabled means the popup has read the active tab; it now keeps that tab id,
+      // so it can take focus like a real popup without changing its target.
+      await expect(popup.getByRole('button', { name: 'Scan this page' })).toBeEnabled();
+      await popup.bringToFront();
       return popup;
     });
   },
@@ -77,5 +82,3 @@ export const test = base.extend<ExtensionFixtures>({
     );
   },
 });
-
-export const expect = test.expect;

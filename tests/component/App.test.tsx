@@ -14,6 +14,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
+const scanStatus = () => screen.getByRole('status', { name: 'Scan status' });
 const scanButton = () => screen.getByRole('button', { name: /scan this page|scanning/i });
 
 async function renderReady() {
@@ -67,7 +68,7 @@ describe('SC-UI-003 scanning from the popup', () => {
     expect(sendMessage).toHaveBeenCalledWith({ type: 'scan:start', tabId: 5 });
     expect(scanButton()).toBeDisabled();
     expect(scanButton()).toHaveAttribute('aria-busy', 'true');
-    expect(screen.getByRole('status')).toHaveTextContent('Scanning this page…');
+    expect(scanStatus()).toHaveTextContent('Scanning this page…');
   });
 
   it('shows the summary when the result arrives in storage', async () => {
@@ -86,14 +87,10 @@ describe('SC-UI-003 scanning from the popup', () => {
     });
     await act(() => session.set({ [scanKey(5)]: { status: 'done', result } }));
 
-    expect(screen.getByRole('status')).toHaveTextContent('Scan complete.');
+    expect(scanStatus()).toHaveTextContent('Scan complete.');
     expect(screen.getByTestId('count-violations')).toHaveTextContent('3');
     expect(screen.getByTestId('count-needs-review')).toHaveTextContent('1');
     expect(screen.getByTestId('count-passed')).toHaveTextContent('37');
-    const bySeverity = screen.getByRole('list', { name: 'Violations by severity' });
-    expect(bySeverity).toHaveTextContent('Critical2');
-    expect(bySeverity).toHaveTextContent('Moderate1');
-    expect(bySeverity).not.toHaveTextContent('Serious');
     expect(scanButton()).toBeEnabled();
   });
 

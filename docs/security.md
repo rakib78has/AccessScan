@@ -38,6 +38,8 @@ cannot be released by mistake.
 | `javascript:` or other unsafe help links     | Only `https:` help URLs survive normalization and validation                                                              | Active |
 | Spoofed extension messages                   | Accepted only from SiteCheck's own extension pages (id and URL checked); other extensions and content scripts are ignored | Active |
 | Malformed messages or scanner output         | Runtime guards on every message and on the scanner result; stored state is re-validated when read                         | Active |
+| Page-derived selectors used for highlighting | Passed to the page as serialized `args` and used only with `querySelector`; invalid ones report "not found" (SC-UI-005)   | Active |
+| Help links opening attacker-controlled pages | `https:` only, opened with `rel="noopener noreferrer"`                                                                    | Active |
 | Page tampering with the scanner              | The scanner runs in the extension's isolated world, out of reach of page scripts                                          | Active |
 | Remote or dynamic code                       | Default MV3 CSP; build validator rejects CSP loosening; ESLint bans `eval`; axe-core is bundled, never fetched            | Active |
 | Over-broad access                            | `activeTab` only, enforced by the build validator                                                                         | Active |

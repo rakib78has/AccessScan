@@ -26,7 +26,7 @@ export default defineConfig({
         test: {
           name: 'component',
           environment: 'jsdom',
-          include: ['tests/component/**/*.test.tsx'],
+          include: ['tests/component/**/*.test.{ts,tsx}'],
           setupFiles: ['tests/helpers/setup-dom.ts'],
         },
       },
@@ -45,6 +45,9 @@ export default defineConfig({
         'src/scanner/accessibility/**': { lines: 90, branches: 90 },
         'src/storage/**': { lines: 90, branches: 90 },
         'src/shared/**': { lines: 90, branches: 90 },
+        'src/content/**': { lines: 90, branches: 90 },
+        'src/popup/filters.ts': { lines: 90, branches: 90 },
+        'src/popup/wcag.ts': { lines: 90, branches: 90 },
       },
     },
   },

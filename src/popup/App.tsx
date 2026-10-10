@@ -1,5 +1,5 @@
 import { scanErrorMessage } from '../shared/errors';
-import { ScanSummary } from './components/ScanSummary';
+import { ResultsView } from './components/ResultsView';
 import { useScan, type PopupState } from './hooks/useScan';
 
 export function App() {
@@ -27,12 +27,11 @@ export function App() {
       </button>
 
       {/* Announces progress and errors to screen readers without moving focus. */}
-      <div role="status" aria-live="polite" className="text-sm">
+      <div role="status" aria-live="polite" aria-label="Scan status" className="text-sm">
         <StatusMessage state={state} />
       </div>
 
-      {state.phase === 'done' && <ScanSummary result={state.state.result} />}
-
+      {/* Kept above the results so a long list can never push it out of sight. */}
       <p
         className="rounded-md border border-amber-300 bg-amber-50 p-3 text-xs text-amber-900 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-100"
         data-testid="automation-disclaimer"
@@ -40,6 +39,8 @@ export function App() {
         Automated checks find only some accessibility problems. A clean result does not mean a page
         meets WCAG; manual testing with a keyboard and a screen reader is still needed.
       </p>
+
+      {state.phase === 'done' && <ResultsView tabId={state.tabId} result={state.state.result} />}
     </main>
   );
 }
