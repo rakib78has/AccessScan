@@ -8,6 +8,8 @@ const FILES = [
   'popup/index.html',
   'service-worker.js',
   'scanner.js',
+  'THIRD_PARTY_NOTICES.txt',
+  'THIRD_PARTY_NOTICES_SCANNER.txt',
   'icons/icon-16.png',
   'icons/icon-32.png',
   'icons/icon-48.png',
@@ -30,6 +32,14 @@ describe('SC-UNIT-002 validateBuild', () => {
       'host_permissions is not allowed by the permission policy',
     ]);
   });
+
+  it.each(['THIRD_PARTY_NOTICES.txt', 'THIRD_PARTY_NOTICES_SCANNER.txt'])(
+    'requires the licence notices %s for bundled third-party code',
+    (notice) => {
+      const files = FILES.filter((file) => file !== notice);
+      expect(validate({}, files)).toEqual([`build is missing licence notices ${notice}`]);
+    },
+  );
 
   it('requires the injected scanner, which the manifest does not reference', () => {
     const files = FILES.filter((file) => file !== 'scanner.js');

@@ -30,6 +30,8 @@ function writeDist(overrides: { manifest?: object; extra?: Record<string, string
     'service-worker.js': 'chrome.runtime.onInstalled.addListener(() => {});',
     'service-worker.js.map': '{}',
     'scanner.js': '(function () {})();',
+    'THIRD_PARTY_NOTICES.txt': 'notices',
+    'THIRD_PARTY_NOTICES_SCANNER.txt': 'notices',
     'icons/icon-16.png': 'png',
     'icons/icon-32.png': 'png',
     'icons/icon-48.png': 'png',
@@ -68,7 +70,7 @@ describe('SC-UNIT-016 packageBuild', () => {
     const result = packageBuild({ distDir: writeDist(), outDir: out, packageVersion: VERSION });
 
     expect(result.zipPath).toBe(join(out, 'sitecheck-1.2.3.zip'));
-    expect(result.fileCount).toBe(8);
+    expect(result.fileCount).toBe(10);
     const zip = readFileSync(result.zipPath);
     expect(readFileSync(result.checksumPath, 'utf8')).toBe(`${sha256(zip)}  sitecheck-1.2.3.zip\n`);
     expect(Object.keys(unzipSync(zip))).not.toContain('service-worker.js.map');
