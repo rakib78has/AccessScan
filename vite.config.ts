@@ -41,6 +41,8 @@ export default defineConfig(({ mode }) => ({
     target: `chrome${MINIMUM_CHROME_VERSION}`,
     // Unminified output keeps Chrome Web Store review and debugging simple.
     minify: false,
+    // Chrome supports modulepreload natively; the polyfill would add a fetch() to the bundle.
+    modulePreload: { polyfill: false },
     sourcemap: true,
     rollupOptions: {
       input: {

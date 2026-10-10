@@ -51,9 +51,53 @@ describe('SC-UNIT-002 validateBuild', () => {
     ]);
   });
 
-  it('rejects a CSP that allows eval or remote code', () => {
-    const csp = { extension_pages: "script-src 'self' 'unsafe-eval'; object-src 'self'" };
-    expect(validate({ content_security_policy: csp })).toHaveLength(1);
+  it.each([
+    "script-src 'self' 'unsafe-eval'; object-src 'self'",
+    "script-src 'self' http://localhost:*; object-src 'self'",
+    "script-src 'self' https://cdn.example.com; object-src 'self'",
+  ])('rejects the loosened CSP %s', (policy) => {
+    expect(validate({ content_security_policy: { extension_pages: policy } })).toEqual([
+      'content_security_policy must not allow eval, inline scripts, or remote sources',
+    ]);
+  });
+
+  it("requires an explicit CSP, since Chrome's default trusts localhost scripts", () => {
+    expect(validate({ content_security_policy: undefined })).toEqual([
+      "content_security_policy.extension_pages must set script-src 'self'",
+    ]);
+  });
+
+  describe('dynamic code and network calls in SiteCheck’s own bundles', () => {
+    const run = (sources: Record<string, string>) =>
+      validateBuild({
+        manifest: buildManifest(VERSION),
+        files: FILES,
+        packageVersion: VERSION,
+        sources,
+      });
+
+    it.each([
+      ['eval(', 'eval()'],
+      ['x = new Function("a", "b")', 'new Function'],
+      ['fetch("https://evil.example")', 'fetch()'],
+      ['new XMLHttpRequest()', 'XMLHttpRequest'],
+      ['new WebSocket(u)', 'WebSocket'],
+      ['navigator.sendBeacon(u, d)', 'sendBeacon'],
+    ])('rejects %s in the service worker', (code, name) => {
+      expect(run({ 'service-worker.js': code })).toEqual([
+        `service-worker.js must not contain ${name}`,
+      ]);
+    });
+
+    it('allows the injected scanner, which bundles axe-core', () => {
+      expect(run({ 'scanner.js': 'return new Function("def", code)' })).toEqual([]);
+    });
+
+    it('does not mistake look-alike words for calls', () => {
+      expect(run({ 'assets/popup.js': 'const prefetch = 1; retrieval(); evaluate();' })).toEqual(
+        [],
+      );
+    });
   });
 
   it('rejects a version that differs from package.json', () => {

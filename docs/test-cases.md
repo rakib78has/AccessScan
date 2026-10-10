@@ -21,6 +21,8 @@ actually completed.
 | SC-UNIT-013 | CSV export      | Well-formed RFC 4180 file; row per element; whole-page rows; Unicode    | Yes       | 2026-10-10 | Pass    |
 | SC-UNIT-014 | JSON export     | Tool, page, totals, disclaimer; findings round-trip; hostile text inert | Yes       | 2026-10-10 | Pass    |
 | SC-UNIT-015 | File names      | Safe, predictable download names from any page URL                      | Yes       | 2026-10-10 | Pass    |
+| SC-UNIT-016 | Packaging       | Reproducible zip without source maps; refuses invalid builds            | Yes       | 2026-10-10 | Pass    |
+| SC-UNIT-017 | Release check   | Tag format, version match, changelog section, release notes             | Yes       | 2026-10-10 | Pass    |
 | SC-INT-001  | Orchestrator    | Successful scan: running, then result stored, tab watch released        | Yes       | 2026-10-10 | Pass    |
 | SC-INT-002  | Orchestrator    | Restricted pages, file access, missing tab, hidden URL, no grant        | Yes       | 2026-10-10 | Pass    |
 | SC-INT-003  | Orchestrator    | Timeout, navigation (late result ignored), closed tab, removed frame    | Yes       | 2026-10-10 | Pass    |
@@ -40,6 +42,9 @@ actually completed.
 | SC-UI-010   | Findings        | Page-wide findings show the fix without elements or highlight buttons   | Yes       | 2026-10-10 | Pass    |
 | SC-SEC-001  | Findings        | Hostile markup in titles, selectors and snippets stays inert text       | Yes       | 2026-10-10 | Pass    |
 | SC-SEC-002  | CSV export      | Formula-like cells (`=`, `+`, `-`, `@`, tab, CR) are neutralized        | Yes       | 2026-10-10 | Pass    |
+| SC-SEC-003  | Privacy         | Scan, highlight and export make no network requests                     | Yes       | 2026-10-10 | Pass    |
+| SC-SEC-004  | Scanner world   | String evaluation is blocked where the scanner runs (`EvalError`)       | Yes       | 2026-10-10 | Pass    |
+| SC-SEC-005  | CSP             | Extension runs under `script-src 'self'; object-src 'self'`             | Yes       | 2026-10-10 | Pass    |
 | SC-UI-011   | Export          | JSON and CSV downloads, file names, status, failure, URL cleanup        | Yes       | 2026-10-10 | Pass    |
 | SC-E2E-001  | Extension       | Service worker registers; popup renders with no errors                  | Yes       | 2026-10-10 | Pass    |
 | SC-E2E-002  | Popup           | No axe violations including contrast, light and dark themes             | Yes       | 2026-10-10 | Pass    |

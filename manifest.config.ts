@@ -45,8 +45,15 @@ export function buildManifest(
       service_worker: 'service-worker.js',
       type: 'module',
     },
+    // Stricter than Chrome's default, which also trusts scripts from
+    // http://localhost:* and http://127.0.0.1:* for development convenience.
+    content_security_policy: {
+      extension_pages: EXTENSION_PAGES_CSP,
+    },
   };
 }
+
+export const EXTENSION_PAGES_CSP = "script-src 'self'; object-src 'self'";
 
 function icons(): Record<string, string> {
   return {

@@ -16,6 +16,9 @@ globalThis.__siteCheckScan = async () => {
     resultTypes: ['violations', 'incomplete'],
     iframes: true,
     frameWaitTime: FRAME_WAIT_MS,
+    // axe can re-download the page's stylesheets for a few CSS rules. SiteCheck
+    // promises to make no network requests, so that is switched off explicitly.
+    preload: false,
   });
   // The full URL is used only to resolve canonical links; it is never stored.
   const seo = runSeoChecks(document, location.href);

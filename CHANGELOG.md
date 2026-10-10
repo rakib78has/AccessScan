@@ -8,6 +8,8 @@ All notable changes are recorded here. The format follows
 
 ### Added
 
+- Release workflow: pushing a `vX.Y.Z` tag re-runs every check and publishes a GitHub release
+  with a reproducible store zip, its SHA-256 checksum and the changelog notes.
 - Regression suite: 11 fixture pages (contrast edge cases, shadow DOM, dynamic content, frames,
   unusual markup, empty pages) checked against reviewed expected results on every CI run.
 - `docs/accuracy.md`: what SiteCheck finds, flags for review and misses, with evidence.
@@ -32,3 +34,10 @@ All notable changes are recorded here. The format follows
 - Manifest V3 extension scaffold: popup shell, service worker, generated manifest.
 - Build validation that enforces the permission policy.
 - Unit, component and end-to-end test harness; GitHub Actions CI.
+
+### Security
+
+- Explicit content security policy (`script-src 'self'; object-src 'self'`), stricter than
+  Chrome's default, which also trusts localhost scripts.
+- axe-core's optional stylesheet download is switched off; scans make no network requests.
+- Builds are rejected if SiteCheck's own code contains `eval`, `new Function` or network calls.
